@@ -110,6 +110,7 @@ There are many questions now?
                 nothing, because it maps the container nw with the host machine nw
         * `docker network inspect none`
                 There is no networking, insecure
+
     3. Prove that the containers in default bridge network can not communocate with container from a custom bridge network
         * Create a custom bridge network - `docker network create -d bridge isolate-net`
         * docker network ls - This will list the newly created network under bridge driver
@@ -133,3 +134,10 @@ There are many questions now?
                 - <img width="520" alt="docker-new" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/1b65d306-a3ed-41f1-96e6-db88ad7866ad">
                 - This shows that two containes of two different bridge network are totally isolated
             
+    4. How to remove a container from one network
+        - `docker network disconnect net-name container-name`
+    
+    5. How to know if any network which does not have any container
+        - This will list the network-Id who has one or more container attached `docker network ls -q`
+    
+    6. 
