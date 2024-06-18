@@ -41,3 +41,83 @@ There are many questions now?
 - During container creation & start, if no specific network is defined, then by default docker attach the container with `docker0` network
 - Docker uses `NAT` - Network Address Translation for containners to access & communicate with external network, Port mapping is also possible.
 
+**Docker Network Driver**
+
+- When a software wants to communicate with any underlying hardware, it ca not communicate directly, it needs the driver(`A apecial kind of software`) which is designed in such a way that translates the message to hardware which the hardware can understand.
+- Similarly, the docker also needs a driver to communicate with the network interfaces.
+- There are `3 main` types of network `drivers` available which docker uses to communicate with the network interface.
+    * `Bridge` driver 
+        - This is the default driver that docker uses out of the box
+        - This creates a bridge between docker container and the host
+        - This is one of the reasons, we promot the containers to be accessible on a specific port `-p 8080:8080` 
+            [-p `host_port`:`container_port`]
+    * `host` driver
+        - It removes the network isolation between the docker containers and the host
+        - when we run a container, we dont promote the container to use different port, it works on the same port as the host.
+            - `-p 8000:8000` [X] This is not needed.
+            - `ipV6` is still not supported as of June 2024.
+    * `Overlay` driver
+        - This network driver makes the dockers of one host to communocate with the dockers of another host 
+        - So, the containes of cross docker hosts also can communicate 
+        - The `OS-level` routing is not needed
+
+    ### There are other drivers also 
+    * `ipvlan` - IPvlan networks give users total control over both IPv4 and IPv6 addressing.
+    * `macvlan` - Macvlan networks allows assigning a MAC address to a container, making it appear as a physical device on your network. The Docker daemon routes traffic to containers by their MAC addresses.
+    * `none` - Completely isolate a container from the host and other containers.
+
+    More about docker networking can be read from here - https://docs.docker.com/network/drivers/
+
+    ## Docker commands to manage, maintain the docker network
+    1. `Read` - List the networks of docker on your host - `docker network ls`
+    2. `Create` - Create a user defined network - `docker network create -d bridge my-net`
+            - define which driver to use - here `bridge` driver is used
+            - define the network name = here `my-net` is the name of the network
+    3. `Read` - Get more detailed info about a particular network driver
+            - `docker network inspect bridge`
+            ```
+                    [
+                        {
+                            "Name": "bridge",
+                            "Id": "8bfc0c27e13bc12fc34e0d689dbaaeb7996bb9ee06fd93f282cc8bfaa875c136",
+                            "Created": "2024-06-18T07:09:49.346240669Z",
+                            "Scope": "local",
+                            "Driver": "bridge",
+                            "EnableIPv6": false,
+                            "IPAM": {
+                                "Driver": "default",
+                                "Options": null,
+                                "Config": [
+                                    {
+                                        "Subnet": "172.17.0.0/16",
+                                        "Gateway": "172.17.0.1"
+                                    }
+                                ]
+                            },
+                            "Internal": false,
+                            "Attachable": false,
+                            "Ingress": false,
+                            "ConfigFrom": {
+                                "Network": ""
+                            },
+                            "ConfigOnly": false,
+                            "Containers": {},
+                            "Options": {
+                                "com.docker.network.bridge.default_bridge": "true",
+                                "com.docker.network.bridge.enable_icc": "true",
+                                "com.docker.network.bridge.enable_ip_masquerade": "true",
+                                "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+                                "com.docker.network.bridge.name": "docker0",
+                                "com.docker.network.driver.mtu": "65535"
+                            },
+                            "Labels": {}
+                        }
+                    ]           
+            ```
+    4. `Update` - Once the network is created, we can `connect` & `Disconnect` the containers into that network
+        - create a host network : `docker network create -d host my-host-net`
+        - connect a container into that network - `docker network connect my-host-net partho-container`
+        - disconnect - `docker network disconnect my-host-net partho-container`
+    5. `Delete` 
+                - Deleting a single network **rm** - `docker network rm my-host-net`
+                - Deleting multiple networks - `docker network rm net1 net2 net3`
