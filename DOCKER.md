@@ -1,4 +1,4 @@
-## what is docker
+## What is docker
 Docker is a software or a container runtime, which can be installed over any operating system like windows, linux or mac.
 There are many questions now?
  - software?
@@ -53,12 +53,18 @@ There are many questions now?
         - This is the default driver that docker uses out of the box
         - This creates a bridge between docker container and the host
         - This is one of the reasons, we promot the containers to be accessible on a specific port `-p 8080:8080` 
-            [-p `host_port`:`container_port`]
+        - [-p `host_port`:`container_port`]
+        - we can create our own custom bridge network to isolate certain containers
+        - `docker network create -d app-net`
     * `host` driver
         - It removes the network isolation between the docker containers and the host
+        - This can be a security burden for some secure applications
         - when we run a container, we dont promote the container to use different port, it works on the same port as the host.
             - `-p 8000:8000` [X] This is not needed.
             - `ipV6` is still not supported as of June 2024.
+        - We can not create `host` network
+        - but we can run some container on `host` network like this
+            - `docker run -d --network host --name partho-container partho-image`
     * `Overlay` driver
         - This network driver makes the dockers of one host to communocate with the dockers of another host 
         - So, the containes of cross docker hosts also can communicate 
@@ -83,11 +89,47 @@ There are many questions now?
             - This gives the vital info like
                 - what are the containers are attached to this network
         <img width="650" alt="docker-nw-inspect" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/0d1069f5-c5f1-4a58-b938-c608f5fa4ec6">
-        
+
     4. `Update` - Once the network is created, we can `connect` & `Disconnect` the containers into that network
         - create a host network : `docker network create -d host my-host-net`
         - connect a container into that network - `docker network connect my-host-net partho-container`
-        - disconnect - `docker network disconnect my-host-net partho-container`
+        - disconnect - `docker network disconnect my-bridge-net partho-container`
     5. `Delete` 
-                - Deleting a single network **rm** - `docker network rm my-host-net`
+                - Deleting a single network **rm** - `docker network rm my-bridge-net`
                 - Deleting multiple networks - `docker network rm net1 net2 net3`
+
+
+    ## Lets get more into the docker Networking:
+    1. list the networking - `docker network ls`
+    2. inspect all the 3 networks and take a look at the `IPAM config`
+        * `docker network inspect bridge` 
+            IPAM.config should have value of network as `docker0` 
+                "Subnet": "172.17.0.0/16",
+                "Gateway": "172.17.0.1"
+        * `docker network inspect host`
+                nothing, because it maps the container nw with the host machine nw
+        * `docker network inspect none`
+                There is no networking, insecure
+    3. Prove that the containers in default bridge network can not communocate with container from a custom bridge network
+        * Create a custom bridge network - `docker network create -d bridge isolate-net`
+        * docker network ls - This will list the newly created network under bridge driver
+        * Now, create two containners
+            * one with default bridge network 
+                - `docker run -d --name default-nginx-container nginx`
+                - ispect the default bridge network and find the container IP 
+                    - IP : 172.17.0.2/16
+                    - subnet : 172.17.0.0/16
+                    - gateway : 172.17.0.1
+                - Go inside this container and install `ping` - `docker exec -it default-nginx-container /bin/bash`
+                - `apt-get install -y iputils-ping`
+            * create another container on the custom bridge network
+                - `run -d --network isolate-net --name isolate-nw-container nginx`
+                - ispect the custom isolate bridge network and find the container IP 
+                    - IP : 172.18.0.2/16
+                    - subnet : 172.18.0.0/16
+                    - Gateway : 172.18.0.1
+            * If we carefully see, both the containers are of totally two dofferent networks (one is at 17 network and another on 18 network) and so they can not communicate. 
+            * we can further ping `172.18.0.2` from the default network containers
+                - <img width="520" alt="docker-new" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/1b65d306-a3ed-41f1-96e6-db88ad7866ad">
+                - This shows that two containes of two different bridge network are totally isolated
+            
