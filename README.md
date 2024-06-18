@@ -143,7 +143,8 @@ done
     To do that automatically, 
         - we can nwrite a script and do that
 
-# How to Restoring a backup container - `docker run --rm --volumes-from <container> -v $(pwd):/backup busybox sh -c "cd <container-path> && tar xvf /backup/backup.tar --strip 1"`
+# How to Restoring a backup container 
+- `docker run --rm --volumes-from <container> -v $(pwd):/backup busybox sh -c "cd <container-path> && tar xvf /backup/backup.tar --strip 1"`
 
 # How to ensure the containers are secure to host some secure application
  * Get the image which are trusted 
