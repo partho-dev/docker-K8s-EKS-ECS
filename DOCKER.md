@@ -40,6 +40,9 @@ There are many questions now?
 
 - During container creation & start, if no specific network is defined, then by default docker attach the container with `docker0` network
 - Docker uses `NAT` - Network Address Translation for containners to access & communicate with external network, Port mapping is also possible.
+- `docker0` provides a default IP range in this subnet `172.17.0.0/16`
+- To channge the default IP range we can go to `/etc/dockerdaemon.json`
+- modify the bridge IP and restart the docker
 
 **Docker Network Driver**
 
@@ -70,50 +73,17 @@ There are many questions now?
 
     ## Docker commands to manage, maintain the docker network
     1. `Read` - List the networks of docker on your host - `docker network ls`
+    <img width="362" alt="docker-nw-ls" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/c40fb330-9c3d-419a-8181-5a73c80fde4b">
+
     2. `Create` - Create a user defined network - `docker network create -d bridge my-net`
             - define which driver to use - here `bridge` driver is used
             - define the network name = here `my-net` is the name of the network
     3. `Read` - Get more detailed info about a particular network driver
             - `docker network inspect bridge`
-            ```
-                    [
-                        {
-                            "Name": "bridge",
-                            "Id": "8bfc0c27e13bc12fc34e0d689dbaaeb7996bb9ee06fd93f282cc8bfaa875c136",
-                            "Created": "2024-06-18T07:09:49.346240669Z",
-                            "Scope": "local",
-                            "Driver": "bridge",
-                            "EnableIPv6": false,
-                            "IPAM": {
-                                "Driver": "default",
-                                "Options": null,
-                                "Config": [
-                                    {
-                                        "Subnet": "172.17.0.0/16",
-                                        "Gateway": "172.17.0.1"
-                                    }
-                                ]
-                            },
-                            "Internal": false,
-                            "Attachable": false,
-                            "Ingress": false,
-                            "ConfigFrom": {
-                                "Network": ""
-                            },
-                            "ConfigOnly": false,
-                            "Containers": {},
-                            "Options": {
-                                "com.docker.network.bridge.default_bridge": "true",
-                                "com.docker.network.bridge.enable_icc": "true",
-                                "com.docker.network.bridge.enable_ip_masquerade": "true",
-                                "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
-                                "com.docker.network.bridge.name": "docker0",
-                                "com.docker.network.driver.mtu": "65535"
-                            },
-                            "Labels": {}
-                        }
-                    ]           
-            ```
+            - This gives the vital info like
+                - what are the containers are attached to this network
+        <img width="650" alt="docker-nw-inspect" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/0d1069f5-c5f1-4a58-b938-c608f5fa4ec6">
+        
     4. `Update` - Once the network is created, we can `connect` & `Disconnect` the containers into that network
         - create a host network : `docker network create -d host my-host-net`
         - connect a container into that network - `docker network connect my-host-net partho-container`
