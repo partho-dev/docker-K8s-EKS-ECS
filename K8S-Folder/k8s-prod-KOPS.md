@@ -50,5 +50,19 @@ Configure K8S cluster using `KOPS (Kubernetes - Operations)` and kubernetes.
     - <img width="1030" alt="aws-create-programatic-key" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/26e62563-9217-48a6-ac3a-0985adb2e54f">
     
     * I am using the admin creds here
-    
-    
+
+7. Once the `KOPS` and `AWS cli` is configures on the Ec2 server
+8. Create an AWS `S3 bucket` that will store all Cluster related information
+9. Install `kubectl` on the same KOPS server to manage the K8S lifecycle 
+    - `curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"`
+9. To create the `K8S cluster`, for that we dont need to create the *Ec2 manually*.
+    - We will get the K8S cluster with 1 or 2 nodes of master 1 or 2 nodes of worker node using the `kops command` from the `KOPS Ec2` server itself 
+    - This will automatically create the Ec2 server and the cluster over it and the other networking that is needed for that Cluster to run on Ec2
+10. get a domain for the cluster, ensure its DNS is also setup 
+11. KOPS command to create the cluster
+    `kops create cluster --name=k8s.partho.com --state=s3://partho-k8s-s3-bkt --zones=us-east-1a --node-count=1 --node-size=t2.medium --control-plane-size=t2.medium --dns-zone=k8s.partho.com`
+12. The above command gives only the preview, to create the resource, need to execute this command
+    `kops update cluster --name k8s.partho.com --yes --admin --state=s3://partho-k8s-s3-bkt`
+13. Verify the cluster installation `kops validate cluster k8s.partho.com`
+**Note**
+- If there is no domain, we can use local as well - `partho.k8s.local`
