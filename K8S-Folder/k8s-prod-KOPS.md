@@ -84,7 +84,7 @@ Configure K8S cluster using `KOPS (Kubernetes - Operations)` and kubernetes.
 <img width="664" alt="K8s-Cluster-KOPS" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/a37fca14-85dd-4f69-af91-2b07969722a4">
 
 ## Lets run a POD with nodeport service to test the cluster
-1. create pod.yml file on the KOPS server
+1. ### create pod.yml file on the KOPS server
 `vi pod.yml`
 ```
 apiVersion: v1
@@ -100,7 +100,8 @@ spec:
     ports:
     - containerPort: 80
 ```
-2. create service.yml 
+2. ### create service.yml 
+`service.yml`
 ```
 apiVersion: v1
 kind: Service
