@@ -60,13 +60,72 @@ Configure K8S cluster using `KOPS (Kubernetes - Operations)` and kubernetes.
     - This will automatically create the Ec2 server and the cluster over it and the other networking that is needed for that Cluster to run on Ec2
 10. get a domain for the cluster, ensure its DNS is also setup 
 11. KOPS command to create the cluster
-    `kops create cluster --name=k8s.partho.com --state=s3://partho-k8s-s3-bkt --zones=us-east-1a --node-count=1 --node-size=t2.medium --control-plane-size=t2.medium --dns-zone=k8s.partho.com`
+    `kops create cluster --name=k8s.partho.com --state=s3://partho-k8s-s3-bkt --zones=ap-south-1a --node-count=1 --node-size=t2.medium --control-plane-size=t2.medium --dns-zone=k8s.partho.com`
 12. The above command gives only the preview, to create the resource, need to execute this command
     `kops update cluster --name k8s.partho.com --yes --admin --state=s3://partho-k8s-s3-bkt`
-13. Verify the cluster installation `kops validate cluster k8s.partho.com`
+13. Verify the cluster installation `kops validate cluster k8s.partho.com --state=s3://partho-k8s-s3-bkt`
 **Note**
 - If there is no domain, we can use local as well - `partho.k8s.local`
 
 14. The KOPS would create many resources like VPC, IAM, Ec2 etc, To delete all, we have to delete the cluster
     - know the name of the cluster `kops get clusters --state=s3://partho-k8s-s3-bkt`
     - delete `kops delete cluster k8s.partho.com --state=s3://partho-k8s-s3-bkt --yes`
+15. kubectl install 
+```
+    - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    -  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+    - sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+    - kubectl version --client
+```
+16. To validate if the nodes are ready `kubectl get nodes`
+<img width="572" alt="K8s-Nodes" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/8f4db7fc-6c7d-4ecf-a98f-5831a3535f22">
+
+17. Verify once on instance lists
+<img width="664" alt="K8s-Cluster-KOPS" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/a37fca14-85dd-4f69-af91-2b07969722a4">
+
+## Lets run a POD with nodeport service to test the cluster
+1. create pod.yml file on the KOPS server
+`vi pod.yml`
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+```
+2. create service.yml 
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+```
+
+3. Create the pod `kubectl apply -f pod.yml`
+4. create the service `kubectl apply -f service.yml`
+5. Check if the pod is running `kubectl get pods`
+6. check if the service created external LB IP `kubectl get services`
+    <img width="1297" alt="pod-LB-IP" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/fd90877d-b7e2-4454-9c2d-6a818a95a02c">
+7. The web app is up and running
+8. Lets do some change on the container and see if that is reflecting on the URL
+    - `kubectl exec -it nginx-pod -- /bin/bash` [kubectl get pods]
+    - `cd /usr/share/nginx/html`
+    - install vim if its not there `apt install vim`
+    - `vi index.html`
+<img width="838" alt="container-on-k8s" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/7ebb7007-4a4a-43ed-8a4d-4f0ea491057e">
+
