@@ -2,7 +2,7 @@
 This repo will include all about the containerization
 
 # What is docker container and what is K8s Pod
-- docker container : This runs a single instance of an application, it can be managed and maintained by the docker. 
+- docker container : It is a runtime instance of an image, it can be managed and maintained by the docker. 
 - K8s Pods : It is an abstruction in K8s cluter which can have one or more container within.
 
 # What are the ways, we can troubleshoot issues related to docker containers.
