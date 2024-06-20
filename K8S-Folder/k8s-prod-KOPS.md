@@ -66,3 +66,7 @@ Configure K8S cluster using `KOPS (Kubernetes - Operations)` and kubernetes.
 13. Verify the cluster installation `kops validate cluster k8s.partho.com`
 **Note**
 - If there is no domain, we can use local as well - `partho.k8s.local`
+
+14. The KOPS would create many resources like VPC, IAM, Ec2 etc, To delete all, we have to delete the cluster
+    - know the name of the cluster `kops get clusters --state=s3://partho-k8s-s3-bkt`
+    - delete `kops delete cluster k8s.partho.com --state=s3://partho-k8s-s3-bkt --yes`
