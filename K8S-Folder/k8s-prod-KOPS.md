@@ -3,7 +3,7 @@
 Then managed services by different vendors, with some additional service wrapped around the Kubernetes.
     * Openshift by RedHat
     * Rancher 
-    * Tanzo by Vmware
+    * Tanzu by Vmware
     * AWS EKS
     * Azure AKS
     * Google GKE
@@ -129,4 +129,3 @@ spec:
     - install vim if its not there `apt install vim`
     - `vi index.html`
 <img width="838" alt="container-on-k8s" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/7ebb7007-4a4a-43ed-8a4d-4f0ea491057e">
-
