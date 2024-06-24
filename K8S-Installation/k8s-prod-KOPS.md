@@ -1,4 +1,4 @@
-- Kubernetes has its own distributions.
+### Kubernetes has its own distributions.
     * Kubernnetes (Open source)
 Then managed services by different vendors, with some additional service wrapped around the Kubernetes.
     * Openshift by RedHat
