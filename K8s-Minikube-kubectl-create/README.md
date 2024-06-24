@@ -31,33 +31,36 @@
     - Check the services `kubectl get services` 0r `kubectl get svc` Note: There may be one **default** `kubernetes` service
 
 - Now, write the Kubernetes menifest files
-    - 1. `Deployment.yaml`
-        - There are two ways we can create the deployment
 
-        1. Automatically using `kubectl create` command
+1. `Deployment.yaml`
+- There are two ways we can create the deployment
 
-        - use `kubectl create` command to create that automatically
-        - I suggest to create that using `create` command and read the file and then manually do some edits and see the output.
-        - Once it gets a practice, we can write that manually 
-         * `kubectl create deployment express-deployment --image=daspratha/express:v1`
+## Automatically using `kubectl create` command
+
+- use `kubectl create` command to create that automatically
+- I suggest to create that using `create` command and read the file and then manually do some edits and see the output.
+- Once it gets a practice, we can write that manually 
+* `kubectl create deployment express-deployment --image=daspratha/express:v1`
 
           **OR**
 
-        2. Manually - create a file `Deployment.yaml` & write all the configurations manually
+2. Manually - create a file `Deployment.yaml` & write all the configurations manually
         
-    - 2. Service.yaml 
-        - Create the service using `kubectl expose` command
-        - Know the deployment name - `kubectl get deployment`
-        - expose the deployment with nodeport type 
-            - `kubectl expose deployment express-deployment --type=NodePort --port=3000`
-        - check the service - `kubectl get svc`
+**Service**: The applications are inside POD and POD gets cluster private IP, so to get the pods exposed to NodePort(Host Nw), create a service
 
-    * - The source code does, src or Dockerfile may not be needed to be on the same place.
-    - 3. Once the service is deployed, check its URL to access the pod 
-        - Know the service name - `kubectl get svc`
-        - `minikube service express-deployment --url` #http://192.168.64.2:31683
+- Create the service using `kubectl expose` command
+- Know the deployment name - `kubectl get deployment`
+- expose the deployment with nodeport type 
+    - `kubectl expose deployment express-deployment --type=NodePort --port=3000`
+    - check the service - `kubectl get svc`
 
-    - 4. Now, go to browser and you will see the application from this URL
-    - 5. Once the deployment & service are created, to **delete** them
-        - **Deployment** - `kubectl delete deployment express-deployment`
-        - **Service** - `kubectl delete services express-deployment` 
+* - The source code does, src or Dockerfile may not be needed to be on the same place.
+
+- Once the service is deployed, check its URL to access the pod 
+- Know the service name - `kubectl get svc`
+- `minikube service express-deployment --url` #http://192.168.64.2:31683
+
+-  Now, go to browser and you will see the application from this URL
+- Once the deployment & service are created, to **delete** them
+- **Deployment** - `kubectl delete deployment express-deployment`
+- **Service** - `kubectl delete services express-deployment` 
