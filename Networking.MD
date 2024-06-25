@@ -43,3 +43,9 @@ But, the same model can not be used by the orchastration tool like `Kubernetes` 
 1. For `Docker` - docker network ls
 2. For `K8S` - kubectl describe pod <pod-name>
 
+## To know about the cluster overlay network 
+- kubectl get pod -o wide
+<img width="612" alt="k8s-cluster-IP" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/2a39f79e-30b7-4d1b-b818-924457ae81a2">
+
+- Here, the IP is the POD IP and each pod gets the IP from the cluster network, that is CNI overlay network plugin like calico.
+- They provide `private` IP to all the pods in the cluster, it may be on one node or on the other.
