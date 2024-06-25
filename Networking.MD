@@ -98,3 +98,20 @@ spec:
           app: allowed-app
 ```
 
+- Apply the network policy `apply -f networkpolicy.yaml`
+- Check if the policy applied corretly 
+- We can describe the networkpolicy resource as well
+<img width="592" alt="k8s-nw-policy" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/7fa1d38b-733e-41c3-9ec6-1a9f4c6e8f87">
+
+- Find the pods IP address - `kubectl get pods -0 wide`
+```
+macbook@MacBooks-MacBook-Pro docker-K8s-EKS-ECS % kubectl get pods -o wide
+NAME                                   READY   STATUS    RESTARTS   AGE     IP           NODE       NOMINATED NODE   READINESS GATES
+express-deployment-6fcdcfd77d-zv4cq    1/1     Running   0          3h18m   10.244.0.6   minikube   <none>           <none>
+isolated-deployment-6f4f8ddddf-b9wmj   1/1     Running   0          3h18m   10.244.0.7   minikube   <none>           <none>
+```
+
+- Now, go inside the other container and try to ping the isolated pod IP [ ping 10.244.0.7]
+`kubectl exec -it express-deployment-6fcdcfd77d-zv4cq -- /bin/sh`
+  - ping 10.244.0.7 // The traffic would not passby
+  
