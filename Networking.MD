@@ -112,6 +112,5 @@ isolated-deployment-6f4f8ddddf-b9wmj   1/1     Running   0          3h18m   10.2
 ```
 
 - Now, go inside the other container and try to ping the isolated pod IP [ ping 10.244.0.7]
-`kubectl exec -it express-deployment-6fcdcfd77d-zv4cq -- /bin/sh`
+- `kubectl exec -it express-deployment-6fcdcfd77d-zv4cq -- /bin/sh`
   - ping 10.244.0.7 // The traffic would not passby
-  
