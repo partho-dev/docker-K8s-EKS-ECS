@@ -61,6 +61,13 @@ If we want to isolate one container from the other, we create a seperate custom 
 - This is an isolation method for Docker
 <img width="792" alt="Docker-nw-3" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/e930ef77-116d-4dc1-9dd9-ecdc0271e1ab">
 
+<img width="1062" alt="Docker-nw-4" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/aa979b54-e7d4-4395-91bb-1b109d476893">
+
+- Here both the containers get two different IP of different NW, so communication between these two containers are not possible
+
+<img width="981" alt="Docker-nw-5" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/627d76b3-b1ee-4c15-ac4a-57e5def82b3c">
+
+
 **For Kubernetes**
 - Kubernetes does not have the structure to isolate pods based on networking as all the pod gets the IP on the same network on the CNI plugin IP range.
 - So, to isolate that, the way is to create `network policy` 
