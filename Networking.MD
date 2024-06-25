@@ -49,3 +49,15 @@ But, the same model can not be used by the orchastration tool like `Kubernetes` 
 
 - Here, the IP is the POD IP and each pod gets the IP from the cluster network, that is CNI overlay network plugin like calico.
 - They provide `private` IP to all the pods in the cluster, it may be on one node or on the other.
+
+
+How the Docker and Kubernetes creates isolation among the container or pods?
+
+**For Docker**
+For Docker - If we want to isolate one container from the other, we create a seperate custom bridge network
+- Because we create a seperate bridge nw, it gets different subnet and different gateway
+- So, the containers inside that network is isolated from the container on other bridge network.
+- This is an isolation method for Docker
+<img width="792" alt="Docker-nw-3" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/e930ef77-116d-4dc1-9dd9-ecdc0271e1ab">
+
+**For Kubernetes**

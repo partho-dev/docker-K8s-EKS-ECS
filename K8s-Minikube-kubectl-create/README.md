@@ -62,5 +62,5 @@
 
 -  Now, go to browser and you will see the application from this URL
 - Once the deployment & service are created, to **delete** them
-- **Deployment** - `kubectl delete deployment express-deployment`
-- **Service** - `kubectl delete services express-deployment` 
+        - **Deployment** - `kubectl delete deployment express-deployment`
+        - **Service** - `kubectl delete services express-deployment` 
