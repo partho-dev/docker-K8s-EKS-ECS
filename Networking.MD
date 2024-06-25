@@ -54,10 +54,40 @@ But, the same model can not be used by the orchastration tool like `Kubernetes` 
 How the Docker and Kubernetes creates isolation among the container or pods?
 
 **For Docker**
-For Docker - If we want to isolate one container from the other, we create a seperate custom bridge network
+
+If we want to isolate one container from the other, we create a seperate custom bridge network
 - Because we create a seperate bridge nw, it gets different subnet and different gateway
 - So, the containers inside that network is isolated from the container on other bridge network.
 - This is an isolation method for Docker
 <img width="792" alt="Docker-nw-3" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/e930ef77-116d-4dc1-9dd9-ecdc0271e1ab">
 
 **For Kubernetes**
+- Kubernetes does not have the structure to isolate pods based on networking as all the pod gets the IP on the same network on the CNI plugin IP range.
+- So, to isolate that, the way is to create `network policy` 
+- Apply the network policy - `kubectl apply -f network-policy.yaml`
+
+```
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-specific
+  namespace: default // Define the namespace where the pod is
+spec:
+  podSelector:
+    matchLabels:
+      app: my-isolates-app //This is the app which needs to be isolated
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: allowed-app
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: allowed-app
+```
+
