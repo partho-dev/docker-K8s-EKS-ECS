@@ -140,4 +140,23 @@ There are many questions now?
     5. How to know if any network which does not have any container
         - This will list the network-Id who has one or more container attached `docker network ls -q`
     
-    6. 
+    6. Lets see some Docker in easy fun way
+        * You have to create an image - `docker build -t your-image .`
+        * Curious to see the list of all images - `docker images`
+        * curious to see whats inside a single image - `docker image inspect image-id`
+        * Now, you want to create a container out of that image - `docker run -d --name your_container -p systemPort:containerPort your_image`
+        * Want to see the list of container - `docker ps` or `docker ps -a` [To see **a**ll container]
+        * curious to go inside the container and see your code - `docker exec -t image_id /bin/sh`
+        * trying to create a file, but its giving "permission denied" - Chek the user `whoami` or `id` - Its a non root
+        * exit out of the container by typing `exit` and go inside again as a root user - `docker exec -it --user root image_id /bin/sh`
+        * you want to stop or pause the container at night - `docker stop container_id` 
+        * You want to know about networking now, - `docker network ls`
+        * to know more about each network to know how many containers inside the network or other info - `docker network inspect network_id`
+        * You want to create an isolated bridge network to host a standalone container - `docker network create -d bridge new_net`
+        * now you want to connect an existing container from another network to be attached with your new network - `docker network connect new_net container-id`
+        * to verify if the container got attached with the new_net, inspect the container - `docker ispect container_id` Look for "Networks" block
+        * You can easily disconnect the container also from this network and the container gets attached to the default bridge nw - `docker network disconnect new_net container_id`
+        * You want to know what is happening to a certain container - `docker logs container-id -f`
+        * Now, you got more curious and want to know which container is taking more resource from you laptop - `docker stats` or `docker top container_id`
+        * 
+
