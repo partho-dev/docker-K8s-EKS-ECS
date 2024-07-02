@@ -14,16 +14,17 @@ This repo will include all about the containerization
 * To see the running process in a container - `docker top contaoner-id`
 
 # How to delete unused docker resources like 
-- image 
-    list all images - `docker images`
-    delete all `un-used` images - `docker image prune `
-- container
-    list all the contaioners - `docker ps`
-    delete all `stopped - unused` containers - `docker container prune`
-- volume : Dete unused volumes
-    docker volume prune 
+- image : 
+    - list all images - `docker images`
+    - delete all `un-used` images - `docker image prune `
+- container : 
+    - list all the contaioners - `docker ps`
+    - delete all `stopped - unused` containers - `docker container prune`
+- volume : 
+    Delete unused volumes
+    - `docker volume prune`
 - network : If there is any custom network, but no containers are attached, that network can be deleted
-    docker network prune
+    - `docker network prune`
 - Remove all at once - `docker system prune -a`
 
 # How to know which network is having any containers attached.
@@ -43,6 +44,11 @@ for network in $(docker network ls -q); do
 done
 
 ```
+
+**Note** : 
+- The `-f` is meant `--format` 
+- This is Go format - `https://docs.docker.com/config/formatting/`
+
 
 ## How to restrict a container to have 1 CPU & 1GB Ram
 `docker run -d --cpu 1 --memory 1g --name partho-container nginx`
