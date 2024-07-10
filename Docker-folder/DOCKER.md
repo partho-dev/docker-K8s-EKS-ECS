@@ -95,8 +95,8 @@ There are many questions now?
         - connect a container into that network - `docker network connect my-host-net partho-container`
         - disconnect - `docker network disconnect my-bridge-net partho-container`
     5. `Delete` 
-                - Deleting a single network **rm** - `docker network rm my-bridge-net`
-                - Deleting multiple networks - `docker network rm net1 net2 net3`
+        - Deleting a single network **rm** - `docker network rm my-bridge-net`
+        - Deleting multiple networks - `docker network rm net1 net2 net3`
 
 
     ## Lets get more into the docker Networking:
@@ -111,7 +111,7 @@ There are many questions now?
         * `docker network inspect none`
                 There is no networking, insecure
 
-    3. Prove that the containers in default bridge network can not communocate with container from a custom bridge network
+    ###  Prove that the containers in default bridge network can not communocate with container from a custom bridge network
         * Create a custom bridge network - `docker network create -d bridge isolate-net`
         * docker network ls - This will list the newly created network under bridge driver
         * Now, create two containners
@@ -134,13 +134,13 @@ There are many questions now?
                 - <img width="520" alt="docker-new" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/1b65d306-a3ed-41f1-96e6-db88ad7866ad">
                 - This shows that two containes of two different bridge network are totally isolated
             
-    4. How to remove a container from one network
+    ###  How to remove a container from one network
         - `docker network disconnect net-name container-name`
     
-    5. How to know if any network which does not have any container
+    ###  How to know if any network which does not have any container
         - This will list the network-Id who has one or more container attached `docker network ls -q`
     
-    6. ## Lets see some Docker in easy fun way
+    ## Lets see some Docker in easy fun way
         * You have to create an image - `docker build -t your-image .`
         * Curious to see the list of all images - `docker images`
         * curious to see whats inside a single image - `docker image inspect image-id`
@@ -160,29 +160,41 @@ There are many questions now?
         * Now, you got more curious and want to know which container is taking more resource from you laptop - `docker stats` or `docker top container_id`
         * Now, you found that your db table info are gone from Mysql container, so you want to set a volume to retain the data
         
-        ## To set the volume to a container, there are two methods 
+    ## To set the volume to a container, there are two methods 
 
-        1. **Docker Volume**
+    **Docker Volume**
         * First you create a volume - `docker create volume my_volume`
         * see its status = `docker volume ls`
         * To know more about that volume, ispect the volume - `docker inspect volume your_volume_name`
         * then you can assign that volume to a new container - `docker run -d -v partho-volume --name new-cont-0 -p 3000:3000  daspratha/express:v1`
 
-        2. **Bind Mount**
+    **Bind Mount**
         * In this, you dont need to create any volume upfront, this method can mount host any volume with container
         `docker run -d -v $(pwd):/app --name new-cont-1 -p 3001:3000 daspratha/express:v1`
         
-        * Now you are confused which one to use, in easy way to remeber, for development, its good to go with `Bind Mount` method
-        & for prod go with `Docker volume`
+    ### Now you are confused which one to use?
+    - In easy way to remeber, for development, its good to go with `Bind Mount` method
+    - for prod go with `Docker volume`
 
-        * You need to use some **environment varibale** to be passed into your container application, which can also be done in two ways
-        1. Pass one value of environment, use the flag `-e` 
-            `docker run -d -v $(pwd):/app -e PORT="3030" --name new-cont-2 -p 3001:3030  daspratha/express:v1`
-        2. Pass the entire .env file as a flag `--env-file ./.env`
-            `docker run -d -v $(pwd):/app --env--file ./.env --name new-cont-3 -p 3001:3030  daspratha/express:v1`
+    ## You need to use some **environment varibale** to be passed into your container application, 
+    - which can also be done in `two ways`
+    - Pass one value of environment, use the flag `-e key="value"` 
+        - `docker run -d -v $(pwd):/app -e PORT="3030" --name new-cont-2 -p 3001:3030  daspratha/express:v1`
+    - Pass multiple environment - add multiple `e` 
+        - `docker run -d -v $(pwd):/app -e PORT="3030" -e ENV="dev" --name new-cont-2 -p 3001:3030  daspratha/express:v1`
 
-        * Now, once all the development is completed, you would like to delete or remove all un-used resources `docker system prune` `docker system prune -a` This removes the cache also.
-        * The container has some good changes, and you want to save the same state of container `docker commit container_id new_image_name`
-        * Its the time to push the image to some image repo 
-            * First login `docker login` - Enter your dockerhub creds
-            * Now, push the image `docker push dockerhub_username/your_image`
+    - Pass the entire .env file as a flag `--env-file ./.env`
+        - `docker run -d -v $(pwd):/app --env--file ./.env --name new-cont-3 -p 3001:3030  daspratha/express:v1`
+
+    ## Now, once all the development is completed, you would like to delete or remove all un-used resources 
+    - `docker system prune` 
+    - `docker system prune -a` This removes the cache also.
+
+    ## How to retain the state of a container
+    - The container has some good changes, and you want to save the same state of container 
+    - `docker commit container_id new_image_name`
+
+    ## How to push the image to remote repo
+    - Its the time to push the image to some image repo 
+        - First login `docker login` - Enter your dockerhub creds
+        - Now, push the image `docker push dockerhub_username/your_image`

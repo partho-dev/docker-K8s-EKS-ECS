@@ -72,4 +72,61 @@
     5. To overcome this limitation, its not advisable to use replicaset manifest file, instead we should use deployment manifest file. 
     Deployment manifest provides the facility to create the Replicas of PODS and the update the PODS with latest version of the container image with latest source code.
 
-11. 
+11. When a Pod gets deployed, it automatically receives an IP address(Private IP) from the cluster network, mainly they are the network adapters from 3rd party company like Calico.
+12. services : Two pods with two different containers communicates over internal IPs [IP for pods not containers]  of pods, but the IP may change so, the communication of application with DB may be interrupted, if the DB pod dies and a new pod comes with new IP, so a component called “service” gets attached with pods and then the communication between two container is possible through a service name (svc) of service
+    - ex: http://cart_deployment.svc:8080
+    - It also acts as a Load Balancer (based on the service mode - cluster mode, nodeport mode, Load Balancer Mode),
+    - which directs the traffic to different pods of same name space of 2nd replica
+    - But, the problem still remains the same, the ontainer gets a new IP, so how a service able to communicate with the application container which gets new IP.
+    - This becomes possible for service because of service discovery, here it does not track the containers based on its IP address, but it tracks based on labels and selectors.
+    - service enables the containers to be accessible from other networks
+    - It has 3 different modes to set up the containers
+        - cluster mode - makes the container accessible from within the container only 
+            - Login to minikube and can be accessible
+        - nodeport mode - makes the container accessible from the node
+            - Access from the host 
+        - Load Balancer mode [available only for cloud K8S setup]
+            - It provides a load balancer public IP, so its accessible anywhere But, its expensive, as each service needs seperate LB, so cost of cloud increases
+            - It provides only Round Robin LB capabilities
+            - Other LB capabilities like sticky session, host/path based rounting are missing Does not provide any TLS out of the box
+
+    - Service in K8S filled the gap of losing the connectivity with pod because of new IP assigned to the newly created pod, while the previous pods gets terminated. Pods are ephemeral in nature.
+    - It even provided the facility to connect from external network using service type as Load balancer and it equally distributes the traffic among other pods.But, this had some limitations.
+        1. 	Exhausted requirement of Load balancer static IP for each service
+        2. 	There were no security(TLS) on the traffic of request and response
+        3. 	The Load balancer type does not provide the other benefits like
+            - Host based routing
+            - Path based routing
+            - Maintaining session to one particular pod
+    - Ingress gives the solution to all these limitations of K8s service.
+    But, ingress also has some limitations, like it does not provide the health check of the pod, for that we have to rely on Liveness Probe & Readiness Probe.
+    - So, its always recommended to create the deployment manifest file as a common file for both deployment and service.
+
+## Developer Flow 
+
+1. 	Do the development of the application
+2. 	Create a Dockerfile for that application
+Create an image of the application from the base image mentioned on the Dockerfile
+Run a container from that image – use volume flag to keep the container updated.
+3. 	Push the container on Dockerhub
+Deploy in k8s [Into K8S Cloud ] [Or local for testing ]
+Need to write K8s deployment configuration files. (yaml file)
+Write configuration for Deployments
+4. 	The deployment is responsible to creating the number of pods. Once the pods are created, the images are pulled from dockerhub and spin the containers
+5. Enable communication of the pods-containers within the cluster | For that, configure cluster-IP service
+Write the pod deployment files.
+
+Need to write the deployment files separately for all the applications or microservices.
+For an example, there are two microservices cart and products, so need to write two deployment files for cart and products.
+ 
+To write the deployment files, execute this command
+- `Kubectl create deployment (or deploy) product --image=daspratha/product –dry-run -o yml  > product-deployment.yml`
+<img width="1110" alt="Docker-0" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/653b4c4c-a834-4987-897a-a0830a4ab7aa">
+
+- after updating the same yml file, to run that again to create the new IP service, execute this command
+First time : k create -f product-deployment.yml  [ -f = from the file or kubectl instead of k]
+After any changes : kubectl apply -f angular_deployment.yaml
+
+- **Note**: Only two objects are created on this k8s. Deployment and services.
+There are other advanced objects also there node selector, node affinity, network policy etc.
+
