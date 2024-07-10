@@ -1,7 +1,7 @@
 ## We will understand more about networking related to Docker and Kubernetes
 
 
-- When docker was developed to containerise application, they had to deal with the networking as well for the communication of the containers among themselves and to the externet nw.
+- When docker was developed to containerise application, they had to deal with the networking as well for the communication of the containers among themselves and to the externel nw.
 - So, they came up with a blue print of networking design named `CNM` - `Container network Model`
     This had mainly 3 building blocks
     1. Sandbox - It is an isolated network stack, this has NIC, ports, route tables, dns config.
@@ -9,7 +9,7 @@
     3. Network - Its like a virtual switch inside the container
 <img width="542" alt="Docker-nw-1" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/9d4167a9-4e0b-4d72-83d7-a1942581917d">
 
-- Once the blueprint is ready, Docker team created a project called `libnetwork` (Its an opensource project) and they implements the CNM and includes built-in network drivers like bridge, host, overlay, and macvlan.
+- Once the blueprint is ready, Docker team created a project called `libnetwork` (Its an opensource project) and they impliments the CNM and includes built-in network drivers like bridge, host, overlay and macvlan.
 - There are multiple 3rd party vendors like Calico, Weave, and OVN extended the libnetwork project and created plugins which provides mode advanced container networking capabilities
 - By default Docker uses their own default networking and their own drivers like bridge, host, none, overlay etc.
 
@@ -49,9 +49,9 @@ But, the same model can not be used by the orchastration tool like `Kubernetes` 
 
 - Here, the IP is the POD IP and each pod gets the IP from the cluster network, that is CNI overlay network plugin like calico.
 - They provide `private` IP to all the pods in the cluster, it may be on one node or on the other.
+- For `AWS EKS` clusters, the overlay network is their own CNI plugin named `Amazon VPC CNI plugin for Kubernetes`
 
-
-How the Docker and Kubernetes creates isolation among the container or pods?
+## How the Docker and Kubernetes creates isolation among the container or pods?
 
 **For Docker**
 
@@ -98,12 +98,12 @@ spec:
           app: allowed-app
 ```
 
-- Apply the network policy `apply -f networkpolicy.yaml`
+- Apply the network policy `kubectl apply -f networkpolicy.yaml`
 - Check if the policy applied corretly 
 - We can describe the networkpolicy resource as well
 <img width="592" alt="k8s-nw-policy" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/7fa1d38b-733e-41c3-9ec6-1a9f4c6e8f87">
 
-- Find the pods IP address - `kubectl get pods -0 wide`
+- Find the pods IP address - `kubectl get pods -o wide`
 ```
 macbook@MacBooks-MacBook-Pro docker-K8s-EKS-ECS % kubectl get pods -o wide
 NAME                                   READY   STATUS    RESTARTS   AGE     IP           NODE       NOMINATED NODE   READINESS GATES
