@@ -1,6 +1,8 @@
-### Kubernetes has its own distributions.
-    * Kubernnetes (Open source)
-Then managed services by different vendors, with some additional service wrapped around the Kubernetes.
+## Kubernetes & other distributions
+- Kubernetes has its own distributions.
+* Kubernnetes (Open source)
+Then, there are other managed services offered by different vendors, with some additional service wrapped around the open sourced Kubernetes.
+- And they are
     * Openshift by RedHat
     * Rancher 
     * Tanzu by Vmware
@@ -19,7 +21,7 @@ Configure K8S cluster using `KOPS (Kubernetes - Operations)` and kubernetes.
 3. A domain for the K8S cluster 
 
 ### Steps and process
-1. Launnch an Ec2 instance (Ubuntu), t2.small is fine
+1. Launch an Ec2 instance (Ubuntu), `t2.small` is fine 🤩
     - ssh to that Ec2
 2. Install `KOPS` on that.
 
@@ -35,29 +37,31 @@ Configure K8S cluster using `KOPS (Kubernetes - Operations)` and kubernetes.
 4. Install aws cli tool  `sudo apt install awscli -y`
 5. validate if CLI is installed  `aws --version`
 6. On the same Ec2 server, run `aws configure`
-    - get the access key & secret access key for the admin user
-    - Right click on AWS profile and click on `security credentials`
-    <img width="367" alt="aws-sec-creds" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/f480e9a5-2fb5-4a94-909a-7822d1419f86">
+- get the access key & secret access key for the admin user
+- Right click on AWS profile and click on `security credentials`
 
-    -  Or if its against the org policy to use admin accesskey, then create a user
-    <img width="1044" alt="aws-create-user" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/03d847f6-8fd9-44cc-a9fc-97b217547157">
-    - give the necessary permissions to the user
-            - AmazonEC2FullAccess
-            - AmazonS3FullAccess
-            - IAMFullAccess
-            - AmazonVPCFullAccess
+<img width="367" alt="aws-sec-creds" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/f480e9a5-2fb5-4a94-909a-7822d1419f86">
+
+-  Or if its against the org policy to use admin accesskey, then create a user
+<img width="1044" alt="aws-create-user" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/03d847f6-8fd9-44cc-a9fc-97b217547157">
+
+- give the necessary permissions to the user
+    - AmazonEC2FullAccess
+    - AmazonS3FullAccess
+    - IAMFullAccess
+    - AmazonVPCFullAccess
     - Then get the accesskey and secret access key for that user
-    - <img width="1030" alt="aws-create-programatic-key" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/26e62563-9217-48a6-ac3a-0985adb2e54f">
+    <img width="1030" alt="aws-create-programatic-key" src="https://github.com/partho-dev/docker-K8s-EKS-ECS/assets/150241170/26e62563-9217-48a6-ac3a-0985adb2e54f">
     
     * I am using the admin creds here
 
 7. Once the `KOPS` and `AWS cli` is configures on the Ec2 server
 8. Create an AWS `S3 bucket` that will store all Cluster related information
 9. Install `kubectl` on the same KOPS server to manage the K8S lifecycle 
-    - `curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"`
+- `curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"`
 9. To create the `K8S cluster`, for that we dont need to create the *Ec2 manually*.
-    - We will get the K8S cluster with 1 or 2 nodes of master 1 or 2 nodes of worker node using the `kops command` from the `KOPS Ec2` server itself 
-    - This will automatically create the Ec2 server and the cluster over it and the other networking that is needed for that Cluster to run on Ec2
+- We will get the K8S cluster with 1 or 2 nodes of master 1 or 2 nodes of worker node using the `kops command` from the `KOPS Ec2` server itself 
+- This will automatically create the Ec2 server and the cluster over it and the other networking that is needed for that Cluster to run on Ec2
 10. get a domain for the cluster, ensure its DNS is also setup 
 11. KOPS command to create the cluster
     `kops create cluster --name=k8s.partho.com --state=s3://partho-k8s-s3-bkt --zones=ap-south-1a --node-count=1 --node-size=t2.medium --control-plane-size=t2.medium --dns-zone=k8s.partho.com`
