@@ -89,6 +89,38 @@
 - 8. Now, to bind the role to the service account, just apply that - `kubectl apply -f rolebind.yml`
 - 9. See the role binding - `kubectl get rolebindings -A`
 
+## What are the ways to manage users in K8s
+- 1. Using 3rd party Identiyty providers and the common method are - `OAuth/OIDC Providers(eg; google, github etc)`
+
+### 2. Create user manually using certificates (Little complex :adult:)
+- To see the list of existing user on the cluster 
+    - `kubectl config get-users`
+    - See in details - `kubectl config view `
+
+### 3. List the current user permission 
+    - use `kubectl auth can-i <verb> <resource>`
+    - `kubectl auth can-i list pods`
+
+### 4. To List all permissions  
+`kubectl-access-matrix`
+- install a plugin `access-matrix`
+- First Install the plugin - `kubectl krew install access-matrix`
+- after install execute this - `kubectl access-matrix`
+
+### 5. `Changing` the users : 
+- To change the user, `context` switch is needed in the kubeconfig file. 
+- Each context is tied to a specific user, cluster, and namespace.
+
+**List all context**
+- `kubectl config get-contexts`
+
+**Set the Current Context**
+- Switch to a different context to change the user
+- `kubectl config use-context <context-name>`
+
+
+    
+
 ## How to create users in Kubermnetes
 * ✅ 3 different files would be created in sequence
     - 1st one would be `.key` 🔥
@@ -100,7 +132,7 @@
 - Get the complete info from the K8s Document - https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/#normal-user
 - Generally, the user and user access is good to have through some 3rd party identity provider
 - But, if there is a need to create a user in K8s, we have to do that in this following way
-- To see the list of existing user on the cluster - `kubectl config get-users`
+
 - **Remember**
     - There is no username & password for any user to connect to K8s, API server authnticate the user through the token key
 - So, we have to create Key for the user
@@ -147,22 +179,25 @@ EOF
 
 - 👉 Check if the CSR status - `kubectl get csr`
 - It should be `Pending`
-- 👉 <img width="752" alt="CSR" src="https://github.com/user-attachments/assets/16a69b5d-ed63-4218-a5e1-ec8c71362db1">
 
 **Note** 👉 :  To Delete the CSR - `kubectl delete csr sam`
 
 7. This will give output as `certificatesigningrequest.certificates.k8s.io/sam created`
 
 8. Now, to move the CSR from Pending to Approve, execute the below command
+
 ```
 kubectl certificate approve sam
 ```
-9. Once its approved, its the time to retrieve that generated certificate (`.crt`)
+- 👉 <img width="752" alt="CSR" src="https://github.com/user-attachments/assets/16a69b5d-ed63-4218-a5e1-ec8c71362db1">
+
+9. Once its `approved`, its the time to retrieve that generated certificate (`.crt`)
 - This gives output as `sam.crt`
 
 ```
 kubectl get csr/sam -o jsonpath="{.status.certificate}" | base64 -d > sam.crt
 ```
+
 10. Create a configuration specific to the user
 ```
 kubectl get csr/sam -o jsonpath="{.status.certificate}" | base64 -d > sam.crt
@@ -171,6 +206,8 @@ kubectl get csr/sam -o jsonpath="{.status.certificate}" | base64 -d > sam.crt
 ```
 cp ~/.kube/config sam-kube-config
 ```
+
+### Add the user to kubeconfig 👨‍💻
 
 11. Set the credentials for the user in the new kubeconfig file.
 ```
