@@ -5,7 +5,7 @@
     - resources (ex - pods or other K8s Resources) to have access on other resources
 
 ## Why Do we need that
-- We dont want a melicious user has full admin role has full permission to delete or damage any resources inside the K8s Cluster
+- We dont want a melicious user with full admin role to delete or damage any resources inside the K8s Cluster
 - We dont want some pod with some melicious container application has full access on the secret or other important resources
 - Providing the POD read-only access to to sensitive information stored in Secrets.
 - To follow the least privilege is the best policy to avoid any kind of fatel issues later
@@ -24,8 +24,8 @@
 
 ## What are the components
 - `User` Account 🥇 : This is used to provide leaset privilege to the `users`
-    - But, the point to be remembered, there is no way, we can create users for K8s
-    - So, to provide the access to user level, K8s depends upon the Identofy provider of the platform
+    - But, the point to be remembered, its not highly recommended to create user manually for K8s, its good to offload that to 3rdparty identity provider.
+    - So, to provide the access to user level, K8s depends upon the Identity provider of the platform
     - Ex - For EKS, the user level RBAC is the IAM policy that is assigned to the IAM user who is managing the cluster
 - `service account` 🥇 : This is used to provide least privilege to the `K8s resources` 
 
@@ -265,6 +265,7 @@ roleRef:
   kind: Role
   name: sam-role
   apiGroup: rbac.authorization.k8s.io
+  
 ```
 - Then apply that to K8s Cluster 
 - `kubectl apply -f rolebinding.yml`
