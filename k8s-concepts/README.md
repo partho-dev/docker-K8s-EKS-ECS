@@ -53,7 +53,22 @@
     - 1st A - `Authentication` :  The user/programm is authenticated to perform the task(It generally comes through request header)
     - 2nd A - `Authorisation` : Checks if the user is authorised to do the task based on RBAC
     - 3rd A - `Admission Control` : Its a module which modifies or reject the request. & then saves to DB (`ETCD`)
-   -  API-Server stores that information into its Database ETCD
+   -  API-Server stores that information into its Database ETCD [ The request does not store to DB directly, it needs to follow the Governance]
+
+- ![k8s-admission-controller](https://github.com/user-attachments/assets/48092a3e-eb63-49e7-bcd5-56d1403401e8)
+
+- **Note**
+-  ✅ When a user sends an API using kubectl, the request first has to pass through the gateway API Server and that API server checks if the requested user is authenticated and authorized(RBAC)
+-  ✅ If the requested user is authenticated, the request object gets stored in the ETCD Database.
+-  ✅ But, before the object gets stored into the DB, the Kubernetes verifies the object and checks for the governance based on custom policy or business logic through Kubernetes Admission Controller.
+-  ✅ There are close to 30+ default admission controllers policy are there https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#what-does-each-admission-controller-do
+
+-  ✅ The `Admission controller` has the capability to mutate(change)/change the request and update the object with new properties before its added into ETCD.
+Notes : Admission controller does not block any request for GET
+Admission controllers limit requests to create, delete, modify objects.
+
+
+
    -  Controller Manager it always watches the resource & get to know about that from the ETCD, Now, it will compare active state with the desired state.
         Actual PODS State = 1
         Desired PODS = 100 
