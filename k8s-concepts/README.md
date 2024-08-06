@@ -50,9 +50,13 @@
    ![image](https://github.com/user-attachments/assets/fb666611-ff49-4377-9516-2e12cf7ee948)
     - Image taken from Google
     - API Server is the main door and it checks `3As` 
+
     - 1st A - `Authentication` :  The user/programm is authenticated to perform the task(It generally comes through request header)
+
     - 2nd A - `Authorisation` : Checks if the user is authorised to do the task based on RBAC
+
     - 3rd A - `Admission Control` : Its a module which modifies or reject the request. & then saves to DB (`ETCD`)
+
    -  API-Server stores that information into its Database ETCD [ The request does not store to DB directly, it needs to follow the Governance]
 
 - ![k8s-admission-controller](https://github.com/user-attachments/assets/48092a3e-eb63-49e7-bcd5-56d1403401e8)
@@ -66,8 +70,9 @@
 -  ✅ The `Admission controller` has the capability to mutate(change)/change the request and update the object with new properties before its added into ETCD.
 Notes : Admission controller does not block any request for GET
 Admission controllers limit requests to create, delete, modify objects.
-
-
+- By default, few admission control policy is enabled on the API server.
+- To check that, login to control pane (`ssh minikube && cat /etc/kubernetes/manifests/kube-apiserver.yaml`)
+- <img width="543" alt="admission-co" src="https://github.com/user-attachments/assets/3590f612-f8dd-4c91-9185-232888167f58">
 
    -  Controller Manager it always watches the resource & get to know about that from the ETCD, Now, it will compare active state with the desired state.
         Actual PODS State = 1
