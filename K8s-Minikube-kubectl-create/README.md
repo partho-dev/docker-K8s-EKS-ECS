@@ -64,3 +64,11 @@
 - Once the deployment & service are created, to **delete** them
         - **Deployment** - `kubectl delete deployment express-deployment`
         - **Service** - `kubectl delete services express-deployment` 
+
+### How to see the minikube dashboard 
+- once all the pods are deployes, to vidualise that through GUI, we need a dashboard
+- Minikube provides the dashboard - `minikube dashboard`
+
+- <img width="1052" alt="dashboard-1" src="https://github.com/user-attachments/assets/54d5f653-5830-45f7-8f5a-c7e59d441fd7">
+
+- <img width="1663" alt="dashboard-2" src="https://github.com/user-attachments/assets/c6cea51a-f7ce-4018-b1fe-5a59f4517eb5">

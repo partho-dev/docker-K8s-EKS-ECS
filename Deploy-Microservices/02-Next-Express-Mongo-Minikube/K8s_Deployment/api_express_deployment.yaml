@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: express-server
+  template:
+    metadata:
+      labels:
+        app: express-server
+    spec:
+      containers:
+      - name: express-server
+        image: daspratha/nextjs_express:express-server
+        ports:
+        - containerPort: 3002
+        env:
+        - name: MONGO_URL
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-config
+              key: mongo-url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: express-service
+spec:
+  type: ClusterIP
+  selector:
+    app: express-server
+  ports:
+  - protocol: TCP
+    port: 3002
+    targetPort: 3002
