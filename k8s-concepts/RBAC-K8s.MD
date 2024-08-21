@@ -272,6 +272,113 @@ roleRef:
 - Then apply that to K8s Cluster 
 - `kubectl apply -f rolebinding.yml`
 
+## How to create IAM user and assign RBAC to the user
+
+- ![K8S-RBAC-Explained](https://github.com/user-attachments/assets/de5c0818-a01c-4e05-9d9a-7aac3093be08)
+
+
+- User Persona - 1 : Admin with full access : This user has full access to create the cluster, create, read, update, delete the resources on the cluster
+- User persona - 2 : `Developer` : This user access is being controlled by the role that is assigned to him
+
+### What the admin does 
+- Admin ensures he creates IAM user (in the case the Developer user was created by the admin)
+- He can create the IAM user 
+    - either from AWS console with no policy attached or with very less prevelige
+    - or he can use `aws cli` and execute command from his laptop to create the developer user
+        - `aws iam create-user --user-name developer-user`
+- Once the user is created, he would create the access/secret key for that `developer-user`
+    - `aws iam create-access-key --user-name developer-user`
+    - Note down the keys and share that with the developer user through email or some other means
+
+- Admin creates the EKS cluster from his laptop 
+    - `eksctl create cluster --name myEKS --node-type t2.large --nodes 1 --nodes-min 1 --nodes-max 2 --region ap-south-1 --zones=ap-south-1a,ap-south-1a`
+- Admin can delete the cluster
+    - `eksctl delete cluster --name myEKS --region ap-south-1`
+
+- Admin creates the necessary deployments, namespace needed
+    - create a namespace which would be used by developer - `kubectl create namespace devNameSpace`
+
+- Admin can execute any deployments to deploy a container on EKS - `kubectl apply -f webapp.yaml` [webapp.yaml is a deployment which has all the info on how many replica is needed, the image etc]
+    - This can be done even by the `developer-user` if he has the access to create deployment [ We will see that in a moment]
+- Admin can list all the deployments in the namespace that was created
+    - `kubectl get all -n devNameSpace` [`kubectl get deployments -n devNameSpace`]
+- Once the user is created, that user needs to be mapped with the EKS cluster, so that any application if needed to have access to user, it can be used
+    - `kubectl apply -f map_user.yaml`
+    - In our this scenerio, this resource is not needed
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user_authentication
+  namespace: devNameSpace
+data:
+  mapUsers:
+    - userarn: <developer-user_arn>
+      username: developer-user
+```
+
+### But, how the Admin is able to do all these?
+- Because the Admin has these 3 tools installed in his laptop
+    - aws cli
+    - eksctl
+    - kubectl
+
+### How the Developer access the cluster and perform the tasks
+- Once the `developer-user` receives the accesskey & secret access key from admin
+- `developer-user` will configure his local laptop to communicate with AWS EKS
+- `aws configure ` & fill all the info 
+- install the `kubectl` tool 
+- now try to execute the command - `kubectl get deployments -n devNameSpace` 
+    - But, he would get an error and can not access the deployments, because the `API Server` on control pane is rejecting his request.
+    - So, he requests the admin to provide him access to see the deployments
+
+- Admin does the below things to get the developer access
+- Admin creates a `Role` & then `Rolebind` resources as below
+
+```
+# Role - role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: devNameSpace
+  name: test_role_name #unique name of the role
+rules:
+  - apiGroups: [""]
+    resources: ["deployments"] 
+    verbs: ["list", "get"]
+
+```
+
+```
+# RoleBinding - rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: devNameSpace
+  name: test_role_name #It can be same name of the role
+subjects:
+  - kind: User
+    name: developer-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: test_role_name
+```
+
+- Then Admin applies that to the cluster 
+- `kubectl apply -f role.yaml`
+- `kubectl apply -f rolebinding.yaml`
+
+- Now, when the `developer` is trying to execute the command from his laptop
+- `kubectl get deployments -n devNameSpace` #able to get the list of deployments
+
+- But, while he tries to execute `kubectl delete deployments deployment_name`
+    - This operation does not perform, because the ROle attached to this user does not have this authorisation
+    - so, the API Server rejects this request
+    - To enable that delete, the admin has to update the role file with verb verbs: `["list", "get", "delete"] `
+
+
+
 ## Important items to note
 - When we create a cluster, Kubernetes automatically creates a ServiceAccount object named default
 
