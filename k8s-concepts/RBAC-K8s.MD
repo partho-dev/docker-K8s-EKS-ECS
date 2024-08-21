@@ -17,7 +17,7 @@
 - So, if the request is not authenticated & authorised, the request would be rejected by the API server.
 
 ## Comparison with AWS IAM policy and Roles
-- When we apply a policy with a user, that becomes the user policy and the user gets the authorison to perform action on AWS based on the policy attached.
+- When we apply a policy with a user, that becomes the user policy and the user gets the authorisation to perform action on AWS based on the policy attached.
 - Similarly, if we want one aws service like Ec2 to have some read access to another aws service like S3
 - We create a Role and then assign that role to the Ec2
 - This is the same concept as `"service account"` for K8s
@@ -44,7 +44,8 @@
 ## How to manage the RBAC
 ![rbac-k8s](https://github.com/user-attachments/assets/20156dc5-3306-452b-8c60-4d3a6a9fffd6)
 - 1. First create a namespace - `kubectl create namespace hello`
-- 2. create a service account  - svcaccount.yml
+- 2. create a service account  - `svcaccount.yml`
+- But, before that make sure to create the namespace `hello` - `kubectl create ns hello`
     ```
         apiVersion: v1
         kind: ServiceAccount
@@ -69,7 +70,7 @@
     ```
     - here, the user has access to only one group for all resources but within the `hello` ns
 - 5. Apply the role menifest on K8s - `kubectl apply -f role.yml`
-- 6. Now, both service account and roles are made, but they are of no use, unless we bind them together
+- 6. Now, both service account and roles are made, but they are of no use, unless we bind them together `rolebinding`
 - 7. `RoleBind`  - rolebind.yml
     ```
         kind: RoleBinding
@@ -83,7 +84,7 @@
         roleRef:
             kind: Role
             name: user1
-        a   piGroup: usergroup1
+            apiGroup: usergroup1
 
     ```
 - 8. Now, to bind the role to the service account, just apply that - `kubectl apply -f rolebind.yml`
@@ -98,8 +99,8 @@
     - See in details - `kubectl config view `
 
 ### 3. List the current user permission 
-    - use `kubectl auth can-i <verb> <resource>`
-    - `kubectl auth can-i list pods`
+- use `kubectl auth can-i <verb> <resource>`
+- `kubectl auth can-i list pods`
 
 ### 4. To List all permissions  
 `kubectl-access-matrix`
@@ -210,6 +211,7 @@ cp ~/.kube/config sam-kube-config
 ### Add the user to kubeconfig 👨‍💻
 
 11. Set the credentials for the user in the new kubeconfig file.
+
 ```
 kubectl --kubeconfig=sam-kube-config config set-credentials sam --client-key=sam.key --client-certificate=sam.crt --embed-certs=true
 ```
