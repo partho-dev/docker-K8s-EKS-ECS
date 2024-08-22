@@ -263,21 +263,89 @@ Your DB_Pass is “Password123”
 - As DB are little difficult to create using stateful set, 
 - so DB are often hosted outside of K8s cluster
 
-### Custom Resource(CR), Custom Resource Defination(CRD), Custom Controller:
+## Custom Resource(CR), Custom Resource Defination(CRD), Custom Controller:
 
-- Kubernetes already has many resources like `ingress` and `ingress controller`, 
-- but to extend the capability of K8S which needs some customisation, 
-- we can develop own `custom resource` and its `custom resource defination` to validate the custom resource.
-- The most common programming language that can be used to develop the custom resource & defination along with controller is `Go` programming language.
-- The custom resource can extennds the capability of K8s API.
-- Kubernetes Custom Resource (`CR`) : 
+### What are the existing resources in Kubernetes
+- Core Resources:
+    - Pods
+    - Services
+    - Deployments
+    - ReplicaSets
+    - StatefulSets
+    - DaemonSets
+    - Ingresses
+    - ConfigMaps
+    - Secrets
+    - PersistentVolumes
+    - PersistentVolumeClaims
 
-    - Some application deployed in K8S cluster may need some additional support or additional need which is not natively available with K8S resource like pods, deployment etc, in that case, we need to develop the custom resource.
+- Networking:
+    - NetworkPolicies
+    - Services
+
+- Storage:
+    - PersistentVolumes
+    - PersistentVolumeClaims
+    - StorageClasses
+
+- Authorization and Access Control:
+    - Roles
+    - RoleBindings
+    - ServiceAccounts
+
+- Cluster Management:
+    - Namespaces
+    - LimitRanges
+    - ResourceQuotas
+
+- Custom Resources:
+    - Any custom resource defined using a CRD
+
+- Kubernetes already has all these resources, then why do we need to have our own `custom resources`
+    - Kubernetes already has many resources like `ingress` and `ingress controller`, 
+    - but to extend the capability of K8S which needs some customisation, 
+    - we can develop own `custom resource` and its `custom resource defination` to validate the custom resource.
+
+### What is Custom resource defination and why do we need that?
+- Before knowing the `custom resource defination`, lets know what is `resource definatuon `
+
+- Kubernetes has many resources like pod, service, deployments etc, these all resources gets created based on the objects that we write in a YAML file
+- and follow certain structure or fields ( ex: kind: deployment, metadata -name etc)
+- Now, why do we need to be so careful while we write these yaml files and ensure it should miantain the proper structure
+- example - in the yaml file we cant write (`kind: ConfigMap` as `kindas: Configmaps`), why?
+- because whatever we write in the YAML file Kubernetes has a built-in mechanism to validate and enforce the schema for each resource type. 
+- so whatever we write in the YAML file, it gets `compared` against the corresponding `Resource Definition` 
+- and ensures the fields, types, and constraints for that resource matches with the schema. 
+- If the resource adheres to the schema, it's allowed to be created in the cluster.
+
+### Is there a way, we can see how these resource definations look like?
+- Kubernetes doesn't have a specific UI or command-line tool to directly view the Resource definations for built-in resources, 
+- 1. From the API reference of each resources, we can get to know about each fields - https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#deployment-v1-apps
+- 2. command line - `kubectl explain deployments` 
+
+### Lets get into Custom Resource and definations
+- Now, since we understood how the resource objects are created and gets validated behind the scene.
+- Some application deployed in K8S cluster may need some additional support or additional need which is not natively available with K8S resource like pods, deployment etc, in that case, we need to develop the custom resource.
 
 - Custom Resource Definition (`CRD`) :  
     - Every Kubernetes resource need to follow some `guidelines` that is defined for that resource and that is defined by that resource defination, 
     - for native K8S resource, these definations are already exist in the K8s cluster. 
     - But, when we develop a new resource, that also need to follow some guidelines and that is defined in cluster defination.
+
+- developers need to develop their own custom resources (example : `kind: databaseMonitor`), 
+- But, we cant allow anyone to write the YAML object of that custom resource `databaseMonitor`, for that we need to define its accptable fields
+- ex: anyone who is writing the object(yaml file) for that resource need to follow these schema [kind: databaseMonitor metadata -name ]
+- If someone creates the object and makes it different than what is mentioned in the schema of the resource, the resource creation would not be done.
+- Here, the schema of the resource is called as custom resource defination for that resource databaseMonitor
+
+### Who validates the resources and its defination
+- K8s conytrol pane has a servoce called `API Server` which examines the resource object and if it matches with its defination schema, it allows the API request made by client to be applied 
+
+
+### How to create the Custom Resources & Custom Resource Definations?
+- The most common programming language that can be used to develop the custom resource & defination along with controller is `Go` programming language.
+- The custom resource can extennds the capability of K8s API.
+- Kubernetes Custom Resource (`CR`) : 
 
 - `Custom Controller` : 
     - Like K8S COntroller, which always keeps an eye(watch) on the resource thrugh K8S API and takes any action to ensure the desired state matches with the current state, 
@@ -313,7 +381,7 @@ Your DB_Pass is “Password123”
 
 - To install the custom controller on K8S cluster 
 - `minikube` for local laptop of `EKS` for AWS etc
-- `First` install the `OLM` on the cluster [Operator lifecycle manager]
+- `First` install the `OLM` on the cluster [`Operator lifecycle manager`]
 - Now install the operators 
     - Example of installing ArgoCD operator into K8S cluster using operatorshub.io
 - Once the operator is installed, we have to do the installation of controller 
