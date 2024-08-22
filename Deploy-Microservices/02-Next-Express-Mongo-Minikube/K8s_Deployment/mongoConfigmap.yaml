@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: mongo-config
 data:
-  mongo-url: mongodb+srv://partho:partho@express-projects.lnzhdto.mongodb.net/minikube?retryWrites=true&w=majority
+  mongo-url: mongodb+srv://<user_name>:<Password>@express-projects.lnzhdto.mongodb.net/minikube?retryWrites=true&w=majority
