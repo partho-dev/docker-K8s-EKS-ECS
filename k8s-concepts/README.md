@@ -272,7 +272,7 @@ Your DB_Pass is “Password123”
     - Deployments
     - ReplicaSets
     - StatefulSets
-    - DaemonSets
+    - DaemonSets 
     - Ingresses
     - ConfigMaps
     - Secrets
@@ -341,6 +341,67 @@ Your DB_Pass is “Password123”
 ### Who validates the resources and its defination
 - K8s conytrol pane has a servoce called `API Server` which examines the resource object and if it matches with its defination schema, it allows the API request made by client to be applied 
 
+### How to develop a CRD:
+
+- `Define the schema`: Determine the fields, types, and validation rules for custom resource. We can use a YAML or JSON format to define the schema.
+- `Create a CRD object`: Write a YAML or JSON file that describes the CRD. This file will include the apiVersion, kind, metadata, and spec sections.
+- `Apply the CRD`: Use the kubectl apply command to apply the CRD to your Kubernetes cluster. This registers the custom resource type with the API server.
+
+Example CRD:
+
+
+```
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: databasemonitors.mygroup.example.com
+spec:
+  group: mygroup.example.com
+  names:
+    plural: databasemonitors
+    singular: databasemonitor
+  scope: Namespaced
+  version: v1
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      type: object
+      properties:
+        spec:
+          type: object
+          properties:
+            databaseType:
+              type: string
+            databaseName:
+              type: string
+            monitorInterval:
+              type: integer
+        status:
+          type: object
+          properties:
+            status:
+              type: string
+```
+
+- Applying the CRD: `kubectl apply -f databasemonitor-crd.yaml`
+
+- Using the Custom Resource: Once the CRD is applied, we can create instances of the custom resource using a YAML file that adheres to the defined schema. For example:
+```
+apiVersion: mygroup.example.com/v1
+kind: DatabaseMonitor
+metadata:
+  name: my-database-monitor
+spec:
+  databaseType: mysql
+  databaseName: my-database
+  monitorInterval: 60
+```
+Note : 
+- The `apiVersion` and `kind` fields in the CRD must match the desired custom resource type.
+- The `spec section` defines the schema for the custom resource.
+- The `validation section` specifies validation rules for the custom resource.
+- After applying the CRD, we can create instances of the custom resource using the specified apiVersion and kind.
 
 ### How to create the Custom Resources & Custom Resource Definations?
 - The most common programming language that can be used to develop the custom resource & defination along with controller is `Go` programming language.
