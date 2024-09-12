@@ -1,8 +1,14 @@
 // import Image from "next/image";
 'use client'
 import { useEffect, useState } from "react";
+export const dynamic = "force-dynamic"
 import axios from "axios";
-const serverApi = "http://localhost:3002/api/v1/products/"
+// const serverApi = "http://localhost:3002/api/v1/products/"
+// const serverApi = process.env.NEXT_PUBLIC_API_URL
+// const serverApi = "http://express-service:3002/api/v1/products";
+const serverApi = process.env.NEXT_PUBLIC_API_URL || "http://express-service:3002/api/v1/products";
+
+// console.log(serverApi)
 
 export default function Home() {
 
@@ -45,7 +51,8 @@ const handleSubmit = async (e)=>{
     const fetchAPI = async ()=>{
       try {
       let response = await axios.get(serverApi)
-      console.log(response.data)
+      // console.log(response.data)
+      console.log("API URL:", serverApi);
       setProducts(response.data)
       } catch (error) {
         console.log(error)

@@ -14,6 +14,31 @@
 * Create an Iggress - `kubectl apply -f ingress.yaml`
 * Get ingress - `kubectl get ingress`
 
+### How `kubectl` knows which cluster it is connected
+- when we install kubectl utility it creates a file `config` inside `~\.kube`
+- SO, this file is called `kubeconfig` file popularly
+- The info about the default cluster is stored in that file
+- to know more about that file `cat ~/.kube/config`
+- To know about all `clusters` configured to connect from local laptop - `kubectl config get-contexts`
+```
+CURRENT   NAME             CLUSTER          AUTHINFO         NAMESPACE
+*         minikube         minikube         minikube         default
+          multinode-demo   multinode-demo   multinode-demo   default
+```
+
+- To know the current active cluster - `kubectl config current-context`
+```
+minikube
+```
+- To `switch` between different clusters to control from local system, need to switch the context - `kubectl config use-context <context-name>`
+- To connect local `kubectl` with eks cluster - `aws eks --region <region-name> update-kubeconfig --name <cluster-name>`
+    - Replace `cluster name` & `region`
+
+- To `merge` multiple `kubeconfig` files 
+    - 1. set the KUBECONFIG to point to both files - `export KUBECONFIG=~/.kube/config:~/path/to/another/config`
+    - 2. use the `kubectl config view` command to see the merged config: `kubectl config view --merge --flatten > ~/.kube/config`
+    
+
 
 ### User Management
 
