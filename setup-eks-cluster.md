@@ -65,10 +65,10 @@ eksctl create cluster \
 
 ### Explanation of Additional Flags:
 
-- `--ssh-access --ssh-public-key my-key-pair`: This flag enables SSH access to your worker nodes and associates the specified SSH key (my-key-pair.pem) with the instances so you can SSH into them if needed.
+- `--ssh-access --ssh-public-key my-key-pair`: This flag enables SSH access to the worker nodes and associates the specified SSH key (my-key-pair.pem) with the instances to SSH into them if needed.
 
-- `--vpc-private-subnets and --vpc-public-subnets`: This allows you to specify custom subnets for the VPC. In production, you’ll likely have dedicated public and private subnets for different workloads.
+- `--vpc-private-subnets and --vpc-public-subnets`: This allows to specify custom subnets for the VPC. In production,
 
 - `--nodes-min, --nodes-max`: These options enable autoscaling for the worker nodes.
 
-- `--enable-ssm`: This enables AWS Systems Manager (SSM), which allows you to access and manage your EC2 instances without needing direct SSH access. It is a more secure and modern approach.
+- `--enable-ssm`: This enables AWS Systems Manager (SSM), which allows to access and manage EC2 instances without needing direct SSH access. It is a more secure and modern approach.
