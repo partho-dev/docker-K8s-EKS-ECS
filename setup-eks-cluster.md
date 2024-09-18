@@ -9,22 +9,29 @@
 
 ### Creation of EKS Cluster through command promot - eksctl
 - make sure aws creds are set 
+
 - check that - ` aws sts get-caller-identity --profile customer-infra-dev`
+
 - Then create the cluster - `eksctl create cluster --name demo-eks --region ap-south-1 --nodegroup-name my-nodes --node-type t3.small --managed --nodes 2`
 
 - Then check if the cluster is created (wait for 20 mons)
+
 - `eksctl get cluster --profile customer-infra-dev`
+
 ```
 macbook@MacBooks-MacBook-Pro ~ % eksctl get clusters --profile customer-infra-dev
 NAME		REGION		EKSCTL CREATED
 demo-eks	ap-south-1	True
 ```
+
 - To see other info like nodegroup etc, need to set the cluster name `--cluster cluster-name`
 - `get nodegroup --cluster demo-eks --profile customer-infra-dev`
 
 
 ### Delete EKS Cluster
-- `eksctl delete cluster --name demo-eks --region ap-south-1 --profile customer-infra-dev`
+```
+`eksctl delete cluster --name demo-eks --region ap-south-1 --profile customer-infra-dev`
+```
 
 ### Steps to Configure kubectl for Your EKS Cluster:
 - Now, need to configure the `kubectl` to see the `eks`
