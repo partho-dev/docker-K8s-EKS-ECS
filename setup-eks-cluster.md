@@ -30,11 +30,11 @@ demo-eks	ap-south-1	True
 
 ### Delete EKS Cluster
 ```
-`eksctl delete cluster --name demo-eks --region ap-south-1 --profile customer-infra-dev`
+eksctl delete cluster --name demo-eks --region ap-south-1 --profile customer-infra-dev
 ```
 
 ### Steps to Configure kubectl for Your EKS Cluster:
-- Now, need to configure the `kubectl` to see the `eks`
+* Now, need to configure the `kubectl` to see the `eks`
 - Use `eksctl` to Update `kubectl Context`
 - `eksctl utils write-kubeconfig --cluster <cluster-name> --profile customer-infra-dev`
 
