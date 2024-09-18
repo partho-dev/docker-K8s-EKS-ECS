@@ -35,15 +35,31 @@ eksctl delete cluster --name demo-eks --region ap-south-1 --profile customer-inf
 
 ### Steps to Configure kubectl for Your EKS Cluster:
 * Now, need to configure the `kubectl` to see the `eks`
+
 - Use `eksctl` to Update `kubectl Context`
-- `eksctl utils write-kubeconfig --cluster <cluster-name> --profile customer-infra-dev`
+
+```
+eksctl utils write-kubeconfig --cluster <cluster-name> --profile customer-infra-dev
+```
 
 - Verify the new context - `kubectl config get-contexts`
-- switch the context between minikube & eks - `kubectl config use-context <eks-cluster-context-name>`
 
-- Test if the `kubectl` able to get the eks - `kubectl get nodes`
+- switch the context between minikube & eks 
+```
+kubectl config use-context <eks-cluster-context-name>
+```
 
-- list all available clusters using - `kubectl config get-clusters`
+- Test if the `kubectl` able to get the eks 
+
+```
+kubectl get nodes
+```
+
+- list all available clusters using
+
+```
+kubectl config get-clusters
+```
 
 
 
