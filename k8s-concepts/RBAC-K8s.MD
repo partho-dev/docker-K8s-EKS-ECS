@@ -18,16 +18,16 @@
 
 ## Comparison with AWS IAM policy and Roles
 - When we apply a policy with a user, that becomes the user policy and the user gets the authorisation to perform action on AWS based on the policy attached.
-- Similarly, if we want one aws service like Ec2 to have some read access to another aws service like S3
-- We create a Role and then assign that role to the Ec2
-- This is the same concept as `"service account"` for K8s
+- Similarly, if we want one aws service like Ec2 to have some read access to another aws service like S3, We create a Role and then assign that role to the Ec2
+- This (`AWS Role`) is the same concept as `"service account"` for K8s
 
 ## What are the components
-- `User` Account 🥇 : This is used to provide leaset privilege to the `users`
+- `User Account` 🥇 : This is used to provide leaset privilege to the `users`
     - But, the point to be remembered, its not highly recommended to create user manually for K8s, its good to offload that to 3rdparty identity provider.
     - So, to provide the access to user level, K8s depends upon the Identity provider of the platform
     - Ex - For EKS, the user level RBAC is the IAM policy that is assigned to the IAM user who is managing the cluster
 - `service account` 🥇 : This is used to provide least privilege to the `K8s resources` 
+- When we create a cluster, Kubernetes automatically creates a ServiceAccount object named default
 
 - `Role` / `ClusterRole`
 - `Role Binding` / `Cluster Role Binding`
@@ -39,13 +39,13 @@
             - 1. API Group 
             - 2. Resources
             - 3. Actions - Verbs (get, post, del etc)
-    - 3. 3rd - To attach the Role with the service, we need something called Role Binding
+    - 3. 3rd - To attach the Role with the service, we need something called `Role Binding`
 
 ## How to manage the RBAC
 ![rbac-k8s](https://github.com/user-attachments/assets/20156dc5-3306-452b-8c60-4d3a6a9fffd6)
 - 1. First create a namespace - `kubectl create namespace hello`
 - 2. create a service account  - `svcaccount.yml`
-- But, before that make sure to create the namespace `hello` - `kubectl create ns hello`
+
     ```
         apiVersion: v1
         kind: ServiceAccount
@@ -53,42 +53,133 @@
         annotations:
             kubernetes.io/enforce-mountable-secrets: "true"
         name: my-serviceaccount
-        namespace: hello
+        namespace: devNameSpace
     ```
+
 - 3. Now, apply the service account - `kubectl apply -f svcaccount.yml`
-- 4. Now, need to create Role which would define the level of access - `role.yml`
+- 4. Now, need to create Role which would define the level of access to a developer - `role.yml` (This is similar to create `IAM policy`)
+
     ```
-        apiVersion: rbac.authorization.k8s.io/v1
-        kind: Role
-        metadata:
-        namespace: hello
-        name: user1
-        rules:
-        - apiGroups: ["usergroup1"]
-        resources: ["*"]
-        verbs: ["*"] // for all - GET, POST, DELET etc
+            kind: Role
+            apiVersion: rbac.authorization.k8s.io/v1
+            metadata:
+              namespace: devNameSpace
+              name: developer-role
+            rules:
+            - apiGroups: [""] # "" indicates the core API group
+              resources: ["pods", "deployments"]
+              verbs: ["get", "list", "watch"]
+
     ```
-    - here, the user has access to only one group for all resources but within the `hello` ns
-- 5. Apply the role menifest on K8s - `kubectl apply -f role.yml`
+    - here, the user has access to only one group for all resources but within the `devNameSpace` ns
+
+- 5. Apply the role menifest on K8s - `kubectl apply -f role.yml` [ Now this role is available in the cluster to be applied to any resources]
 - 6. Now, both service account and roles are made, but they are of no use, unless we bind them together `rolebinding`
 - 7. `RoleBind`  - rolebind.yml
     ```
-        kind: RoleBinding
-        apiVersion: rbac.authorization.k8s.io/v1
-        metadata:
-            name: dev-user-binding
-        subjects:
-        - kind: ServiceAccount
-            name: my-serviceaccount
-            apiGroup: usergroup1
-        roleRef:
-            kind: Role
-            name: user1
-            apiGroup: usergroup1
+            kind: RoleBinding
+            apiVersion: rbac.authorization.k8s.io/v1
+            metadata:
+              name: developer-rolebinding
+              namespace: devNameSpace
+            subjects:
+            - kind: User
+              name: developer-user # Matches the IAM user or the username you set in `aws-auth`
+              apiGroup: rbac.authorization.k8s.io
+            roleRef:
+              kind: Role
+              name: developer-role
+              apiGroup: rbac.authorization.k8s.io
 
     ```
 - 8. Now, to bind the role to the service account, just apply that - `kubectl apply -f rolebind.yml`
 - 9. See the role binding - `kubectl get rolebindings -A`
+
+```
+<==========================================================================================================================================>
+```
+## Analogy with AWS IAM Policy with Role(For namespace level) clusterRole (Cluster Level)
+
+### AWS IAM Policies and Their K8s Equivalent
+
+- AWS IAM Policy:
+  - Defines a set of permissions (e.g., `s3:ListBucket, ec2:StartInstances`).
+  - Can be attached to multiple entities (`users, groups, roles`).
+
+- Kubernetes Role/ClusterRole:
+  - Defines a set of permissions (e.g., `pods: get`, `deployments: list`).
+  - `Role`: Applies within a specific `namespace`.
+  - `ClusterRole`: Applies `cluster-wide` (across all namespaces).
+  - Can be assigned to multiple users or service accounts.
+
+- Applying Permissions in AWS and Kubernetes
+    - AWS IAM Role or Group: The policy that we creat can be attached to any IAM resources like users, groups or roles and that defines the access.
+
+- Kubernetes RoleBinding or ClusterRoleBinding:
+  - Attach a Role or ClusterRole to a user, group, or service account via a RoleBinding (for namespace-scoped roles) or ClusterRoleBinding (for cluster-scoped roles).
+
+- Example Mapping
+  - AWS IAM Policy → K8s Role/ClusterRole:
+        Both define what actions are allowed on specific resources.
+  - AWS IAM Role → K8s RoleBinding/ClusterRoleBinding:
+        Both bind the permissions (IAM Policy / Role) to a user or entity (IAM Role/Group or Kubernetes User/ServiceAccount).
+
+- Example Use Case:
+- `AWS:` - IAM Policy: A policy grants access to EC2 and S3 (Ec2toS3)
+```
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": ["ec2:*", "s3:*"],
+                "Resource": "*"
+            }
+        ]
+    }
+```
+- Once this policy(Ec2toS3) is created, it can be attached to a single or multiple IAM resources
+
+- `Kubernetes`:
+  - ClusterRole: A ClusterRole grants access to pods and deployments `cluster-wide`.
+
+```
+  apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    name: dev-cluster-role
+  rules:
+  - apiGroups: [""]
+    resources: ["pods", "deployments"]
+    verbs: ["get", "list", "watch"]
+```
+
+- This ClusterRole can be applied to multiple users or service accounts via a ClusterRoleBinding:
+- Cluster Role Binding
+
+```
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: dev-cluster-role-binding
+    subjects:
+    - kind: User
+      name: developer1 # Name of the user
+      apiGroup: rbac.authorization.k8s.io
+    - kind: User
+      name: developer2
+      apiGroup: rbac.authorization.k8s.io
+    roleRef:
+      kind: ClusterRole
+      name: dev-cluster-role
+      apiGroup: rbac.authorization.k8s.io
+```
+In both AWS and Kubernetes, policies (AWS) and roles (Kubernetes) define what actions are permitted, while roles (AWS) and role bindings (Kubernetes) determine which users get those permissions.
+
+
+```
+<==========================================================================================================================================>
+```
 
 ## What are the ways to manage users in K8s
 - 1. Using 3rd party Identiyty providers and the common method are - `OAuth/OIDC Providers(eg; google, github etc)`
@@ -272,6 +363,11 @@ roleRef:
 - Then apply that to K8s Cluster 
 - `kubectl apply -f rolebinding.yml`
 
+```
+<=============================================================================================================================>
+
+```
+
 ## How to create IAM user and assign RBAC to the user
 
 - ![K8S-RBAC-Explained](https://github.com/user-attachments/assets/de5c0818-a01c-4e05-9d9a-7aac3093be08)
@@ -282,10 +378,13 @@ roleRef:
 
 ### What the admin does 
 - Admin ensures he creates IAM user (in the case the Developer user was created by the admin)
+
 - He can create the IAM user 
+
     - either from AWS console with no policy attached or with very less prevelige
     - or he can use `aws cli` and execute command from his laptop to create the developer user
         - `aws iam create-user --user-name developer-user`
+
 - Once the user is created, he would create the access/secret key for that `developer-user`
     - `aws iam create-access-key --user-name developer-user`
     - Note down the keys and share that with the developer user through email or some other means
@@ -300,8 +399,10 @@ roleRef:
 
 - Admin can execute any deployments to deploy a container on EKS - `kubectl apply -f webapp.yaml` [webapp.yaml is a deployment which has all the info on how many replica is needed, the image etc]
     - This can be done even by the `developer-user` if he has the access to create deployment [ We will see that in a moment]
+
 - Admin can list all the deployments in the namespace that was created
     - `kubectl get all -n devNameSpace` [`kubectl get deployments -n devNameSpace`]
+
 - Once the user is created, that user needs to be mapped with the EKS cluster, so that any application if needed to have access to user, it can be used
     - `kubectl apply -f map_user.yaml`
     - In our this scenerio, this resource is not needed
@@ -328,6 +429,13 @@ data:
 - `developer-user` will configure his local laptop to communicate with AWS EKS
 - `aws configure ` & fill all the info 
 - install the `kubectl` tool 
+- Update the `kubeconfig` to recognise the `EKS` custer, using `eksctl utils`
+
+```
+eksctl utils write-kubeconfig --cluster <cluster-name>
+
+```
+
 - now try to execute the command - `kubectl get deployments -n devNameSpace` 
     - But, he would get an error and can not access the deployments, because the `API Server` on control pane is rejecting his request.
     - So, he requests the admin to provide him access to see the deployments
@@ -381,4 +489,12 @@ roleRef:
 
 ## Important items to note
 - When we create a cluster, Kubernetes automatically creates a ServiceAccount object named default
+
+```
+<=============================================================================================================================>
+
+```
+
+## How to manage many users to have access the Kubernetes cluster
+- This includees somestandard procedures for both the admins and the developers
 
