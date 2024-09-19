@@ -1,4 +1,4 @@
-## Setup EKS cluster on AWS
+## <mark> Setup EKS cluster on AWS </mark>
 
 - **Prerequisite**
 - aws cli is installed on your laptop

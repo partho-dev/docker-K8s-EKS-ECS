@@ -95,9 +95,8 @@
 - 8. Now, to bind the role to the service account, just apply that - `kubectl apply -f rolebind.yml`
 - 9. See the role binding - `kubectl get rolebindings -A`
 
-```
-<==========================================================================================================================================>
-```
+***
+
 ## Analogy with AWS IAM Policy with Role(For namespace level) clusterRole (Cluster Level)
 
 ### AWS IAM Policies and Their K8s Equivalent
@@ -177,9 +176,7 @@
 In both AWS and Kubernetes, policies (AWS) and roles (Kubernetes) define what actions are permitted, while roles (AWS) and role bindings (Kubernetes) determine which users get those permissions.
 
 
-```
-<==========================================================================================================================================>
-```
+---
 
 ## What are the ways to manage users in K8s
 - 1. Using 3rd party Identiyty providers and the common method are - `OAuth/OIDC Providers(eg; google, github etc)`
@@ -210,7 +207,7 @@ In both AWS and Kubernetes, policies (AWS) and roles (Kubernetes) define what ac
 - Switch to a different context to change the user
 - `kubectl config use-context <context-name>`
 
-
+***
     
 
 ## How to create users in Kubermnetes
@@ -363,10 +360,7 @@ roleRef:
 - Then apply that to K8s Cluster 
 - `kubectl apply -f rolebinding.yml`
 
-```
-<=============================================================================================================================>
-
-```
+---
 
 ## How to create IAM user and assign RBAC to the user
 
@@ -487,13 +481,10 @@ roleRef:
 
 
 
-## Important items to note
+## Important items to note: 
 - When we create a cluster, Kubernetes automatically creates a ServiceAccount object named default
 
-```
-<=============================================================================================================================>
-
-```
+---
 
 ## How to manage many users to have access the Kubernetes cluster
 - This includees somestandard procedures for both the admins and the developers
