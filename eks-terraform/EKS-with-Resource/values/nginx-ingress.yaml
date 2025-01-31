@@ -1,0 +1,9 @@
+---
+controller:
+  ingressClassResource:
+    name: external-nginx #This is the name of the ingress class that we will use to create an ingress
+  service:
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: external #This is to create an NLB in AWS using aws-load-balancer-controller
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip #This is to create an NLB with IP targets, which will be the IP of nginx-ingress-controller
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing #This is to create an internet-facing NLB

@@ -1,0 +1,42 @@
+
+[{  "_comment":"This is for Trust Relations (A-Action P-Principal E-Effect)",
+
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "monitoring.rds.amazonaws.com",
+                "AWS": "ARN_USER",
+                "AWS": "ARN_Group",
+                "Federated": "arn:aws:iam::081476396294:saml-provider/azure-entra"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+},
+
+
+{
+    "_comment":"This is for policy (A-Action, R-Resource, E-Effect)",
+
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "s3-object-lambda:*"
+            ],
+            "Resource": "arn:aws:s3::partho_bucket/*" 
+        }
+    ]
+}]
+
+aws sts assume-role --role-arn arn:aws:iam::88647596631:role/Partho-s3-access --role-session-name partho-session --profile default
+
+[profile partho-long]
+[profile partho-short]
+role_arn = arn:aws:iam::081476396294:role/Partho-s3-access
+source_profile = partho-long

@@ -1,0 +1,33 @@
+# Make sure to keep a chekc on the SPEC section of the deployment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: name_of_deployment
+  namespace: name_of_ns_for_application
+  labels:
+    app: nextjs
+spec:
+  replicas: 1  
+  selector:
+    matchLabels:
+      app: nextjs # This should match with the service label
+  template:
+    metadata:
+      labels:
+        app: nextjs
+    spec:
+      imagePullSecrets:
+        - name: nexuscreds #This should match with the nexus secret that is already applied to this ns before
+      containers:
+        - name: erg-pattern-app-nextjs
+          image: nexus.ergonnex.net/erg-docker-hosted/erg-pattern-app-nextjs:76
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"

@@ -1,0 +1,17 @@
+# Create PVC for application data
+
+# We have already created the Storage Class for EFS as with name "efs" during the process of creating EKS
+# Look for EFS storage class - kubectl get storageclass
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: application-pvc-efs
+  namespace: my_ns
+spec:
+  accessModes:
+    - ReadWriteMany  
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: efs 

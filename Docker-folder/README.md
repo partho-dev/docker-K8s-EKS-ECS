@@ -1,6 +1,3 @@
-# docker-K8s-EKS-ECS
-This repo will include all about the containerization
-
 # What is docker container and what is K8s Pod
 - docker container : It is a runtime instance of an image, it can be managed and maintained by the docker. 
 - K8s Pods : It is an abstruction in K8s cluter which can have one or more container within.
@@ -136,17 +133,17 @@ done
 
 # How to move one container from one Host-1 to Host-2
 * Perform all the above steps like stop, backup the data etc
-    It can be done manually as well, 
-        - ssh to Host1 and inspect the container and find the path of the volume (`cd /user/data`) and then stop the container
-        - Now, zip the backup folder 
-            - `tar cvf backup.tar .`
-        - move the tar file to `2nd Host`, where the comtainer would need to come
-            - `scp backup.tar user@Host2:/user/data`
-            - `cd /user/data`
-            -  extract the backup `tar xvf backup.tar`
-            - Create the new container on Host2 with the previous data
-                - `docker run -d --name container2 -v /user/data:/path/to/container/data partho-image:tag`
-    To do that automatically, 
+- It can be done manually as well, 
+    - ssh to Host1 and inspect the container and find the path of the volume (`cd /user/data`) and then stop the container
+    - Now, zip the backup folder 
+        - `tar cvf backup.tar .`
+    - move the tar file to `2nd Host`, where the comtainer would need to come
+        - `scp backup.tar user@Host2:/user/data`
+        - `cd /user/data`
+        -  extract the backup `tar xvf backup.tar`
+        - Create the new container on Host2 with the previous data
+            - `docker run -d --name container2 -v /user/data:/path/to/container/data partho-image:tag`
+    - To do that automatically, 
         - we can nwrite a script and do that
 
 # How to Restoring a backup container 

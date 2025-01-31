@@ -1,0 +1,27 @@
+# version: '3'
+services:
+  express:
+    container_name: expressapp
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URL: "mongodb://mongo:27017/mydatabase"
+      PORT: 3000
+    networks:
+      - internal-express
+    depends_on:
+      - mongo
+
+  mongo:
+    container_name: mongocontainer
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - internal-express
+
+networks:
+  internal-express:
+    driver: bridge

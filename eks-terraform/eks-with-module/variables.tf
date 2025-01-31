@@ -1,25 +1,25 @@
 variable "region" {
   description = "AWS region"
   type        = string
-  default     = "ap-south-1"
+  default     = "us-east-1"
 }
 
 variable "aws_profile" {
   description = "AWS CLI profile to use for authentication"
   type        = string
-  default     = "default"
+  default     = "erg-infra-dev"
 }
 
 variable "cluster_name" {
   description = "EKS Cluster Name"
   type        = string
-  default     = "partho-eks"
+  default     = "erg-infra-eks"
 }
 
 variable "vpc_name" {
   description = "Name for the VPC"
   type        = string
-  default     = "eks-vpc"
+  default     = "erg-infra-eks-vpc"
 }
 
 variable "vpc_cidr" {
@@ -43,7 +43,7 @@ variable "private_subnets" {
 variable "instance_type" {
   description = "EC2 instance type for worker nodes"
   type        = string
-  default     = "t3.medium"
+  default     = "m5.large"
 }
 
 variable "desired_capacity" {
@@ -73,4 +73,10 @@ variable "environment" {
   description = "Environment name (e.g., dev, staging, prod)"
   type        = string
   default     = "dev"
+}
+
+variable "cluster_version" {
+  description = "EKS Cluster Version"
+  type        = string
+  default     = "1.28"
 }

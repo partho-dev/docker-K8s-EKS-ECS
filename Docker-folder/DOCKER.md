@@ -163,21 +163,21 @@ There are many questions now?
         
     ## To set the volume to a container, there are two methods 
 
-    **Docker Volume**
-        * First you create a volume - `docker create volume my_volume`
-        * see its status = `docker volume ls`
-        * To know more about that volume, ispect the volume - `docker inspect volume your_volume_name`
-        * then you can assign that volume to a new container - `docker run -d -v partho-volume --name new-cont-0 -p 3000:3000  daspratha/express:v1`
+    **Docker Volume** 
+    - First you create a volume - `docker create volume my_volume`
+    - see its status = `docker volume ls`
+    - To know more about that volume, ispect the volume - `docker inspect volume your_volume_name`
+    - then you can assign that volume to a new container - `docker run -d -v partho-volume --name new-cont-0 -p 3000:3000  daspratha/express:v1`
 
-    **Bind Mount**
-        * In this, you dont need to create any volume upfront, this method can mount host any volume with container
+    **Bind Mount** [Most widely used]
+    - In this, you dont need to create any volume upfront, this method can mount host any volume with container
         `docker run -d -v $(pwd):/app --name new-cont-1 -p 3001:3000 daspratha/express:v1`
         
     ### Now you are confused which one to use?
     - In easy way to remeber, for development, its good to go with `Bind Mount` method
     - for prod go with `Docker volume`
 
-    ## You need to use some **environment varibale** to be passed into your container application, 
+    ## You need to use some environment varibale to be passed into your container application, 
     - which can also be done in `two ways`
     - Pass one value of environment, use the flag `-e key="value"` 
         - `docker run -d -v $(pwd):/app -e PORT="3030" --name new-cont-2 -p 3001:3030  daspratha/express:v1`
@@ -228,3 +228,21 @@ There are many questions now?
     - From terminal, type docker login
     - Enter Usernaame/Password of Dockerhub
     - Now, push the image `docker push dockerhub_username/your_image`
+
+
+## Docker Instruction and Arguments
+```
+FROM base AS build
+COPY package*.json ./
+RUN npm ci
+RUN npm run build
+```
+
+- Here, all the Left capital items are called `Docker instruction` &
+- The right side are the `Docker arguments` that is passed into the Dockerfile
+
+## Docker Entrypoint
+- Docker container does not just host the base image, itt lifecycle is based on the process that is run in that container upon its start
+-  There are two ways, we can execute some process in a container when it starts from an image
+- `CMD` : 
+- `ENTRYPOINT`: 

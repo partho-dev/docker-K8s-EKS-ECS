@@ -1,0 +1,30 @@
+global:
+  image:
+    tag: "v2.6.6"
+
+server:
+  extraArgs:
+    - --insecure  # Prevents ArgoCD server from enforcing HTTPS internally
+    # - --rootpath=/
+
+  ingress:
+    enabled: true
+    ingressClassName: "external-nginx"
+    annotations:
+      cert-manager.io/cluster-issuer: http-01-production
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 100m
+      nginx.ingress.kubernetes.io/proxy-buffering: "off"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+      nginx.ingress.kubernetes.io/use-regex: "true"
+    hosts:
+      - argo.ergonnex.net
+    paths:
+      - /
+    pathType: Prefix
+    tls:
+      - secretName: argo-ergonnex-net
+        hosts:
+          - argo.ergonnex.net

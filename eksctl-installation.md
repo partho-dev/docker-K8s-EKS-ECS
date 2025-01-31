@@ -2,7 +2,7 @@
 
 - It is a tool that is specifically used to create EKS cluster on AWS
 - As per the AWS documentation, there are 3 ways, we can create EKS cluster on AWS `https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html`
-    - through EKS
+    - through EKSCTL
     - through AWS CLI
     - Through AWS management console
     - Through IaC like Terraform (Optional)
@@ -17,8 +17,7 @@
 - Connect to the repo of brew using this for eksctl
 - `brew tap weaveworks/tap`
 
-- execute `eksctl` installation with the command
-- `brew install weaveworks/tap/eksctl`
+- execute `eksctl` installation with the command- `brew install weaveworks/tap/eksctl`
 
 - Check version - `eksctl version`
 

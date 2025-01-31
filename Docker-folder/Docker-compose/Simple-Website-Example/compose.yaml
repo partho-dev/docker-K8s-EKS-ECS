@@ -1,0 +1,12 @@
+services:
+  website:
+    container_name: website
+    image: nginx:stable-alpine
+    # build: .
+    ports:
+      - "80:80"
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+
+
+  # It does the same thing that the docker file does with build and run

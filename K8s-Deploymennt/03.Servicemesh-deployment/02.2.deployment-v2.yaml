@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: first-app-v2
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: first-app
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: first-app
+        version: v2
+        istio: monitor
+    spec:
+      imagePullSecrets:
+        - name: nexuscreds
+      containers:
+        - image: nexus.ergonnex.net/erg-docker-hosted/istio-website:v2
+          imagePullPolicy: Always
+          name: first-app
+          # env:
+          #   - name: SERVICE
+          #     value: first-app
+          #   - name: VERSION
+          #     value: v2
+          ports:
+            - name: http
+              containerPort: 80

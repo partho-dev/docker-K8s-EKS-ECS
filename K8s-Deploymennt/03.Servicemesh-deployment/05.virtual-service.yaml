@@ -1,0 +1,25 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: first-app
+  namespace: production
+spec:
+  hosts:
+    - istio.ergonnex.net
+    - first-app
+  gateways:
+    - api
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: first-app
+            subset: v1
+          weight: 10
+        - destination:
+            host: first-app
+            subset: v2
+          weight: 90

@@ -7,7 +7,8 @@
 - IAM for EKS Control Plane (`EKS-Control-Role`)
 - Policies  - 
   - `AmazonEKSClusterPolicy` & 
-  - `AmazonEKSServicePolicy` :aws eks --region <region> update-kubeconfig --name <cluster-name> for CloudWatch logs access and other AWS services integration.
+  - `AmazonEKSServicePolicy`
+  - `aws eks --region <region> update-kubeconfig --name <cluster-name>` => for CloudWatch logs access and other AWS services integration.
   
 
 <img width="1332" alt="eks-IAM-ControlPlne" src="https://github.com/user-attachments/assets/56c368e8-8a4d-431d-8f10-0581e37fe46f">
@@ -145,10 +146,6 @@ eksctl utils write-kubeconfig --cluster eks-partho
 - Node IAM Role: The worker node IAM role is assigned to the node group when the node is launched, either manually or via a managed node group.
 
 
-
-
-
-
 **Prerequisite**
 - aws cli is installed on your laptop
 - completed the aws configure and set the aws IAM user access/secret on laptop (~/.aws/credentials)
@@ -261,3 +258,45 @@ eksctl create cluster \
 - `--nodes-min, --nodes-max`: These options enable autoscaling for the worker nodes.
 
 - `--enable-ssm`: This enables AWS Systems Manager (SSM), which allows to access and manage EC2 instances without needing direct SSH access. It is a more secure and modern approach.
+
+
+
+> ## <mark>Configure local system to work with EKS Cluster</mark>
+
+1. Configure AWS Profile:
+```
+aws configure --profile customer-infra-dev
+```
+
+2. Add EKS Cluster to kubeconfig:
+```
+aws eks --region ap-south-1 update-kubeconfig --name my-cluster --profile customer-infra-dev
+```
+
+3. Verify Access to EKS Cluster:
+
+```
+kubectl get nodes
+```
+
+4.  Switch to the EKS Context:
+```
+kubectl config use-context arn:aws:eks:ap-south-1:<account-id>:cluster/my-cluster
+```
+
+
+## What will happen if the connection to node is timing out
+
+- Check the cluster endpoint access - `aws eks describe-cluster --name my-infra-eks --region us-east-1 --query 'cluster.resourcesVpcConfig' `
+if the output is 
+```
+    "endpointPublicAccess": false,
+    "endpointPrivateAccess": true,
+```
+- The public access from your laptop to EKS is not possible.
+- For that, need
+    - Create a VPN connection to the EKS VPN and connect from laptop through that VPN
+    - use a bastion host on public subnet of the EKS VPN
+    - install eksctl, kubectl and use the bastion server to perform all K8s administartions
+    - else - update the eks cluster to be accessible publicly `cluster_endpoint_public_access = true`
+    

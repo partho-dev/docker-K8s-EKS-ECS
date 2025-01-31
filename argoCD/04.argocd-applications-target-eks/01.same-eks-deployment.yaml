@@ -1,0 +1,27 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nextjs-application
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io #This ennsures the application is deleted from kubernetes also while the application is deleted from argo
+spec:
+  project: default
+  source:
+    repoURL: https://bitbucket.org/lia/express.git
+    targetRevision: feature/payment-gateway
+    path: k8s/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: express-ns
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions: #This section ensures the auto sync happens 
+      - Validate=true
+      - CreateNamespace=false
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true

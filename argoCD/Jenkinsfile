@@ -1,0 +1,130 @@
+def podTemplateName = "kdd8"
+def buildNum = env.BUILD_NUMBER
+
+podTemplate(label: podTemplateName,
+        containers: [
+                containerTemplate(name: 'ubuntu', image: 'ubuntu', command: 'cat', ttyEnabled: true, privileged: true, workingDir: '/home/jenkins/agent'),
+                containerTemplate(name: 'buildah-cont', image: 'noenv/buildah', command: 'sleep 99999', ttyEnabled: true, privileged: true, workingDir: '/home/jenkins/agent'),
+                containerTemplate(name: 'sonar-openjdk', image: 'openjdk', command: 'sleep 99999', ttyEnabled: true, privileged: true, workingDir: '/home/jenkins/agent'),
+                containerTemplate(name: 'nodejs', image: 'node:18.17.0', command: 'cat', ttyEnabled: true, privileged: true, workingDir: '/home/jenkins/agent')
+            ],
+            volumes: [
+                emptyDirVolume(mountPath: '/home/jenkins/agent', memory: false),
+            ],
+        ) {
+    node(podTemplateName) {
+        stage('checkout-code') {
+            println "======================================== \n     Cloning the git repo... \n========================================"
+            checkout([$class: 'GitSCM', branches: [[name: "feature/erg-initial-TOPLENGENB-2"]], extensions: [], userRemoteConfigs: [[credentialsId: 'bitbucket-creds', url: 'https://bitbucket.org/ergonnex/erg-pattern-app-nextjs.git']]])
+        }
+
+        // Extract the repo name
+        def repoName = sh(script: "basename -s .git \$(git config --get remote.origin.url)", returnStdout: true).trim()
+
+        stage('Install Dependencies') {
+            container('nodejs') {
+                sh 'npm install'
+            }
+        }
+            stage('Run Unit Test') {
+                container('nodejs') {
+                    sh 'npm run test:unit'
+                }
+        }
+	    stage('Build') {
+                container('nodejs') {
+                    sh 'npm run build'  // Adjust according to your build command
+                }
+        }
+
+        stage('Perform Static Code Analysis - SonarQube') {
+            container('sonar-openjdk') {
+                echo "========================================"
+                echo "     SonarQube Test"
+                echo "========================================"
+
+                // Set the path for sonar-scanner in a scripted pipeline
+                def scannerHome = tool name: 'sonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+
+                // Write SonarQube configuration properties to file
+                writeFile file: 'sonar-project.properties', text: """
+                    sonar.projectKey=${repoName}-${buildNum}
+                    sonar.projectName="${repoName}-${buildNum}"
+                    sonar.sources=.
+                    sonar.language=js
+                    sonar.sourceEncoding=UTF-8
+                    sonar.exclusions=node_modules/**/*
+                """
+
+                // Run SonarQube scan within the environment configured with SonarQube credentials
+                withSonarQubeEnv('sonarQubeServer') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
+
+        stage('Image build & push to nexus') {
+            container("buildah-cont") {
+                println "======================================== \n     Building the Dockerfile... \n========================================"
+                timestamps {
+                    sh 'pwd'
+                    sh "buildah bud -t nexus.ergonnex.net/erg-docker-hosted/${repoName}:${buildNum} -f docker/local/Dockerfile ."
+                }
+
+                withCredentials([usernamePassword(credentialsId: 'ergonnex-docker-repo-creds', passwordVariable: 'password', usernameVariable: 'username')]) {
+                    sh 'buildah login -u $username -p $password nexus.ergonnex.net'
+                }
+                println "============================================= \n      Pushing the image with tagname... \n============================================="
+                sh "buildah push nexus.ergonnex.net/erg-docker-hosted/${repoName}:${buildNum}"
+                sh 'rm -rf *'
+                println "======================================== \n     Build Completed Successfully... \n========================================"
+            }
+        }
+    
+    stage('Update Kubernetes Manifests') {
+    // Clone the repo again to ensure you have the latest files
+    checkout([$class: 'GitSCM', branches: [[name: "feature/erg-initial-TOPLENGENB-2"]],
+        userRemoteConfigs: [[credentialsId: 'bitbucket-creds', url: 'https://bitbucket.org/ergonnex/erg-pattern-app-nextjs.git']]
+    ])
+
+    sh 'pwd && ls -ltr'
+
+    // Explicitly check out the branch to avoid detached HEAD issues
+    sh 'git checkout -b feature/erg-initial-TOPLENGENB-2'
+
+    // Use the credentials for the push command
+    withCredentials([usernamePassword(credentialsId: 'bitbucket-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        dir('k8s/production') {
+            // Perform sed operations on YAML files
+            // sh "sed -i 's/name: [^[:space:]]*/name: ${repoName}/' deployment.yaml"
+
+            //  Skip name change in imagePullSecrets section, update in other sections
+            sh "sed -i '/imagePullSecrets/,/containers:/!s/name: [^[:space:]]*/name: ${repoName}/' deployment.yaml"
+
+            sh "sed -i 's/namespace: [^[:space:]]*/namespace: ${repoName}/' deployment.yaml"
+            sh "sed -i 's|image: nexus.ergonnex.net/erg-docker-hosted/[^:]*:.*|image: nexus.ergonnex.net/erg-docker-hosted/${repoName}:${buildNum}|' deployment.yaml"
+
+            sh "sed -i 's/namespace: [^[:space:]]*/namespace: ${repoName}/' service.yaml"
+
+            // Update tls:hosts and tls:secretName
+            sh "sed -i 's/namespace: [^[:space:]]*/namespace: ${repoName}/' ingress.yaml"
+            sh "sed -i '0,/^ *hosts:/{s|^ *hosts: *- .*|hosts: - ${repoName}.ergonnex.net|}' ingress.yaml"
+            sh "sed -i 's|secretName: [^[:space:]]*|secretName: ${repoName}-ergonnex-net|' ingress.yaml"
+
+        
+            // Commit and push changes back to the repository
+            sh """
+            git config user.email "jenkins@ergonnex.com"
+            git config user.name "Jenkins CI"
+            git add deployment.yaml ingress.yaml service.yaml
+            git commit -m "Updated namespace and host based on repo name"
+            
+            
+            git push -u https://${USERNAME}:${PASSWORD}@bitbucket.org/ergonnex/erg-pattern-app-nextjs.git feature/erg-initial-TOPLENGENB-2
+            """
+        }
+    }
+    }
+
+    }
+}

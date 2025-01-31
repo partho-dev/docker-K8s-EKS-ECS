@@ -1,0 +1,33 @@
+#Makes ure the ingress is already setup, for our case, its already set with the class name = external-nginx
+# This ingress is already connected with cert issuer  == http-01-production
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nextjs-ingress
+  namespace: my_ns
+  annotations:
+    cert-manager.io/cluster-issuer: http-01-production
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+spec:
+  ingressClassName: external-nginx
+  rules:
+    - host: partho.domain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nextjs-service  # This should be the same name as the service name on 2nd file
+                port:
+                  number: 8080
+  tls:
+    - hosts: 
+        - partho.domain.com
+      secretName: partho-domain-com

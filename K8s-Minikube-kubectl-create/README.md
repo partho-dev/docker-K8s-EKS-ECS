@@ -42,7 +42,7 @@
 - Once it gets a practice, we can write that manually 
 * `kubectl create deployment express-deployment --image=daspratha/express:v1`
 
-          **OR**
+**OR**
 
 2. Manually - create a file `Deployment.yaml` & write all the configurations manually
         

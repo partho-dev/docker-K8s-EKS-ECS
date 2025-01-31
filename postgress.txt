@@ -1,0 +1,26 @@
+
+Create temporary pod to test DB connectivity : 
+kubectl run test-pod --rm -it --image=postgres:latest -- bash
+
+
+psql -h postgress-aurora-instance-1.cdkakiu80cpt.us-east-1.rds.amazonaws.com -U ergdbuser
+psql -h postgress-aurora-instance-1.cdkakiu80cpt.us-east-1.rds.amazonaws.com -U ergdbuser -d ergAppDb
+
+
+- Connect to DB \c db_name
+- Show the table \dt
+
+- Clean the DB
+
+DO $$ DECLARE
+    table_name RECORD;
+BEGIN
+    FOR table_name IN
+        (SELECT tablename FROM pg_tables WHERE schemaname = 'public')
+    LOOP
+        EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(table_name.tablename) || ' CASCADE';
+    END LOOP;
+END $$;
+
+
+

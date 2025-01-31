@@ -1,0 +1,9 @@
+---
+# Manuallly create from cli - kubectl create ns new_ns
+
+# Creating through YAML
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: my_ns
