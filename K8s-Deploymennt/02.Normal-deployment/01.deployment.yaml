@@ -20,8 +20,8 @@ spec:
       imagePullSecrets:
         - name: nexuscreds #This should match with the nexus secret that is already applied to this ns before
       containers:
-        - name: erg-pattern-app-nextjs
-          image: nexus.ergonnex.net/erg-docker-hosted/erg-pattern-app-nextjs:76
+        - name: lia-pattern-app-nextjs
+          image: nexus.lia.com/lia-docker-hosted/lia-pattern-app-nextjs:76
           ports:
             - containerPort: 3000
           resources:

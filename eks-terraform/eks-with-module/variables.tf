@@ -7,19 +7,19 @@ variable "region" {
 variable "aws_profile" {
   description = "AWS CLI profile to use for authentication"
   type        = string
-  default     = "erg-infra-dev"
+  default     = "lia-infra-dev"
 }
 
 variable "cluster_name" {
   description = "EKS Cluster Name"
   type        = string
-  default     = "erg-infra-eks"
+  default     = "lia-infra-eks"
 }
 
 variable "vpc_name" {
   description = "Name for the VPC"
   type        = string
-  default     = "erg-infra-eks-vpc"
+  default     = "lia-infra-eks-vpc"
 }
 
 variable "vpc_cidr" {

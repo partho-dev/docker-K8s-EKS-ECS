@@ -13,13 +13,13 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - istio.ergonnex.net
+        - istio.lia.com
     - port:
         number: 443
         name: https
         protocol: HTTPS
       hosts:
-        - istio.ergonnex.net
+        - istio.lia.com
       tls:
-        credentialName: istio-ergonnex-net
+        credentialName: istio-lia-net
         mode: SIMPLE

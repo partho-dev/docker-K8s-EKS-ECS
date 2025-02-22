@@ -1,10 +1,10 @@
 terraform {
   backend "s3" {
-    bucket         = "erg-infra-tf-state"
+    bucket         = "lia-infra-tf-state"
     key            = "argocd/terraform.tfstate"    # Unique key for ArgoCD
     region         = "us-east-1"
-    dynamodb_table = "erg-infra-tf-state-lock"
+    dynamodb_table = "lia-infra-tf-state-lock"
     encrypt        = true
-    profile        = "erg-infra-user"
+    profile        = "lia-infra-user"
   }
 }

@@ -20,7 +20,7 @@ spec:
       imagePullSecrets:
         - name: nexuscreds
       containers:
-        - image: nexus.ergonnex.net/erg-docker-hosted/istio-website:v1
+        - image: nexus.lia.com/lia-docker-hosted/istio-website:v1
           imagePullPolicy: Always
           name: first-app
           # env:

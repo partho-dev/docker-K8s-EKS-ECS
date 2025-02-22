@@ -84,7 +84,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: nexus-pvc-efs
-  namespace: erg-ns-nexus
+  namespace: ns-nexus
 spec:
   accessModes:
     - ReadWriteMany
@@ -150,10 +150,10 @@ kubectl get pods -o wide --all-namespaces --field-selector spec.nodeName=ip-10-0
 
 NAMESPACE      NAME                       READY   STATUS    RESTARTS      AGE   IP                    NODE                        
 argocd              argocd-dex-server     1/1        Running   0                     47d   10.0.1.128   ip-10-0-1-212.ec2.internal   
-erg-ns-nexus   nexus-deploymen     1/1         Running   0                    63d   10.0.1.243   ip-10-0-1-212.ec2.internal   
+ns-nexus   nexus-deploymen     1/1         Running   0                    63d   10.0.1.243   ip-10-0-1-212.ec2.internal   
 ```
 
 
 - To know which pod is using pvc and what is the pvc usage
-`kubectl describe pod nexus-deployment-5c55f486c4-trvm7 -n erg-ns-nexus | grep -A5 Volumes`
-- Verify PVC bound to EFS : `kubectl describe pvc nexus-pvc-efs -n erg-ns-nexus`
+`kubectl describe pod nexus-deployment-5c55f486c4-trvm7 -n ns-nexus | grep -A5 Volumes`
+- Verify PVC bound to EFS : `kubectl describe pvc nexus-pvc-efs -n ns-nexus`

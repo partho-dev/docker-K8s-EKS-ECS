@@ -8,7 +8,7 @@ find the mysql container name or id
 
 
 - Copy from your local to the application container
-- kubectl cp wordpress_backup.sql wordpress-pod:/tmp/wordpress_backup.sql -n erg-ns-wordpress                                        
+- kubectl cp wordpress_backup.sql wordpress-pod:/tmp/wordpress_backup.sql -n lia-ns-wordpress                                        
 
 - now restore the db to the rds
 - mysql --binary-mode=1 -h blog-aurora-clu.cluster-cdkacpt.us-east-1.rds.amazonaws.com -u rds_user -p rds_db_name < /tmp/wordpress_backup.sql

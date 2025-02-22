@@ -3,8 +3,8 @@ Create temporary pod to test DB connectivity :
 kubectl run test-pod --rm -it --image=postgres:latest -- bash
 
 
-psql -h postgress-aurora-instance-1.cdkakiu80cpt.us-east-1.rds.amazonaws.com -U ergdbuser
-psql -h postgress-aurora-instance-1.cdkakiu80cpt.us-east-1.rds.amazonaws.com -U ergdbuser -d ergAppDb
+psql -h postgress-aurora-instance-1.cdkakiu80cpt.us-east-1.rds.amazonaws.com -U dbuser
+psql -h postgress-aurora-instance-1.cdkakiu80cpt.us-east-1.rds.amazonaws.com -U dbuser -d AppDb
 
 
 - Connect to DB \c db_name

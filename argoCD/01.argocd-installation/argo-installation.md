@@ -123,7 +123,7 @@ server:
 
   - ingressClassName: external-nginx defines which Ingress controller to use.
   - annotations: Set things like force SSL redirection and custom timeout values.
-  - hosts: Defines the domain (argo.ergonnex.net) you want to use to access ArgoCD.
+  - hosts: Defines the domain (argo.lia.com) you want to use to access ArgoCD.
   - tls: Enables TLS and links to a TLS secret (argo-ergonnex-net) managed by cert-manager.
 
 
@@ -145,7 +145,7 @@ resource "helm_release" "argocd" {
 ```
 # Step 4: Point the Domain to the Ingress Controller
 
-Once ArgoCD is deployed, update your DNS records to point argo.ergonnex.net to the IP or DNS name of the Ingress controller. This will let you access ArgoCD from your browser!
+Once ArgoCD is deployed, update your DNS records to point argo.lia.com to the IP or DNS name of the Ingress controller. This will let you access ArgoCD from your browser!
 Step 5: Verify Installation
 
 Time for the moment of truth! Let’s check if everything went smoothly:
@@ -171,7 +171,7 @@ To log in to ArgoCD, retrieve the initial admin password. This password is store
 kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d
 ```
 
-Now, take this password and head to the ArgoCD UI at https://argo.ergonnex.net to log in!
+Now, take this password and head to the ArgoCD UI at https://argo.lia.com to log in!
 
 # Step 8: Optional - Port Forwarding for Local Testing
 

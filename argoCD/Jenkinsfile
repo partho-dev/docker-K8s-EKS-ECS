@@ -15,7 +15,7 @@ podTemplate(label: podTemplateName,
     node(podTemplateName) {
         stage('checkout-code') {
             println "======================================== \n     Cloning the git repo... \n========================================"
-            checkout([$class: 'GitSCM', branches: [[name: "feature/erg-initial-TOPLENGENB-2"]], extensions: [], userRemoteConfigs: [[credentialsId: 'bitbucket-creds', url: 'https://bitbucket.org/ergonnex/erg-pattern-app-nextjs.git']]])
+            checkout([$class: 'GitSCM', branches: [[name: "feature/initial-TOPLENGENB-2"]], extensions: [], userRemoteConfigs: [[credentialsId: 'bitbucket-creds', url: 'https://bitbucket.org/lia/lia-pattern-app-nextjs.git']]])
         }
 
         // Extract the repo name
@@ -68,14 +68,14 @@ podTemplate(label: podTemplateName,
                 println "======================================== \n     Building the Dockerfile... \n========================================"
                 timestamps {
                     sh 'pwd'
-                    sh "buildah bud -t nexus.ergonnex.net/erg-docker-hosted/${repoName}:${buildNum} -f docker/local/Dockerfile ."
+                    sh "buildah bud -t nexus.domai.com/lia-docker-hosted/${repoName}:${buildNum} -f docker/local/Dockerfile ."
                 }
 
-                withCredentials([usernamePassword(credentialsId: 'ergonnex-docker-repo-creds', passwordVariable: 'password', usernameVariable: 'username')]) {
-                    sh 'buildah login -u $username -p $password nexus.ergonnex.net'
+                withCredentials([usernamePassword(credentialsId: 'lia-docker-repo-creds', passwordVariable: 'password', usernameVariable: 'username')]) {
+                    sh 'buildah login -u $username -p $password nexus.lia.net'
                 }
                 println "============================================= \n      Pushing the image with tagname... \n============================================="
-                sh "buildah push nexus.ergonnex.net/erg-docker-hosted/${repoName}:${buildNum}"
+                sh "buildah push nexus.lia.net/lia-docker-hosted/${repoName}:${buildNum}"
                 sh 'rm -rf *'
                 println "======================================== \n     Build Completed Successfully... \n========================================"
             }
@@ -83,14 +83,14 @@ podTemplate(label: podTemplateName,
     
     stage('Update Kubernetes Manifests') {
     // Clone the repo again to ensure you have the latest files
-    checkout([$class: 'GitSCM', branches: [[name: "feature/erg-initial-TOPLENGENB-2"]],
-        userRemoteConfigs: [[credentialsId: 'bitbucket-creds', url: 'https://bitbucket.org/ergonnex/erg-pattern-app-nextjs.git']]
+    checkout([$class: 'GitSCM', branches: [[name: "feature/lia-initial-TOPLENGENB-2"]],
+        userRemoteConfigs: [[credentialsId: 'bitbucket-creds', url: 'https://bitbucket.org/lia/lia-pattern-app-nextjs.git']]
     ])
 
     sh 'pwd && ls -ltr'
 
     // Explicitly check out the branch to avoid detached HEAD issues
-    sh 'git checkout -b feature/erg-initial-TOPLENGENB-2'
+    sh 'git checkout -b feature/lia-initial-TOPLENGENB-2'
 
     // Use the credentials for the push command
     withCredentials([usernamePassword(credentialsId: 'bitbucket-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -102,25 +102,25 @@ podTemplate(label: podTemplateName,
             sh "sed -i '/imagePullSecrets/,/containers:/!s/name: [^[:space:]]*/name: ${repoName}/' deployment.yaml"
 
             sh "sed -i 's/namespace: [^[:space:]]*/namespace: ${repoName}/' deployment.yaml"
-            sh "sed -i 's|image: nexus.ergonnex.net/erg-docker-hosted/[^:]*:.*|image: nexus.ergonnex.net/erg-docker-hosted/${repoName}:${buildNum}|' deployment.yaml"
+            sh "sed -i 's|image: nexus.lia.net/lia-docker-hosted/[^:]*:.*|image: nexus.lia.net/lia-docker-hosted/${repoName}:${buildNum}|' deployment.yaml"
 
             sh "sed -i 's/namespace: [^[:space:]]*/namespace: ${repoName}/' service.yaml"
 
             // Update tls:hosts and tls:secretName
             sh "sed -i 's/namespace: [^[:space:]]*/namespace: ${repoName}/' ingress.yaml"
-            sh "sed -i '0,/^ *hosts:/{s|^ *hosts: *- .*|hosts: - ${repoName}.ergonnex.net|}' ingress.yaml"
-            sh "sed -i 's|secretName: [^[:space:]]*|secretName: ${repoName}-ergonnex-net|' ingress.yaml"
+            sh "sed -i '0,/^ *hosts:/{s|^ *hosts: *- .*|hosts: - ${repoName}.lia.net|}' ingress.yaml"
+            sh "sed -i 's|secretName: [^[:space:]]*|secretName: ${repoName}-lia-net|' ingress.yaml"
 
         
             // Commit and push changes back to the repository
             sh """
-            git config user.email "jenkins@ergonnex.com"
+            git config user.email "jenkins@lia.com"
             git config user.name "Jenkins CI"
             git add deployment.yaml ingress.yaml service.yaml
             git commit -m "Updated namespace and host based on repo name"
             
             
-            git push -u https://${USERNAME}:${PASSWORD}@bitbucket.org/ergonnex/erg-pattern-app-nextjs.git feature/erg-initial-TOPLENGENB-2
+            git push -u https://${USERNAME}:${PASSWORD}@bitbucket.org/lia/lia-pattern-app-nextjs.git feature/lia-initial-TOPLENGENB-2
             """
         }
     }

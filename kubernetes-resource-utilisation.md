@@ -46,9 +46,9 @@ argocd           argocd-server-68ddd59568-qhsvd                       2m        
 cert-manager     cert-manager-654c77dd55-q854t                        1m           26Mi
 cert-manager     cert-manager-cainjector-6498546c9f-h7jcd             1m           29Mi
 cert-manager     cert-manager-webhook-6689564869-7bxrt                1m           11Mi
-erg-ns-jenkins   jenkins-deployment-65c9c7bcfb-7kj6d                  2m           1339Mi
-erg-ns-nexus     nexus-deployment-5c55f486c4-trvm7                    4m           3348Mi
-erg-ns-sonar     sonarqube-deployment-58c99b5f86-krz58                6m           1947Mi
+ns-jenkins   jenkins-deployment-65c9c7bcfb-7kj6d                  2m           1339Mi
+ns-nexus     nexus-deployment-5c55f486c4-trvm7                    4m           3348Mi
+ns-sonar     sonarqube-deployment-58c99b5f86-krz58                6m           1947Mi
 ingress          external-ingress-nginx-controller-54bf9546c5-ntptr   2m           49Mi
 kube-system      autoscaler-aws-cluster-autoscaler-58c8bf9c77-6lzcn   1m           34Mi
 kube-system      aws-load-balancer-controller-6d985cfb5d-4jrk8        2m           27Mi

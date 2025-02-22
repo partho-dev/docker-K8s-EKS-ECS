@@ -2,12 +2,12 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: istio-ergonnex-net
+  name: istio-lia-net
   namespace: istio-ingress
 spec:
-  secretName: istio-ergonnex-net
+  secretName: istio-lia-net
   dnsNames:
-    - istio.ergonnex.net
+    - istio.lia.com
   issuerRef:
     name: http-01-production
     kind: ClusterIssuer

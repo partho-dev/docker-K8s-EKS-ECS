@@ -20,11 +20,11 @@ server:
       nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
       nginx.ingress.kubernetes.io/use-regex: "true"
     hosts:
-      - argo.ergonnex.net
+      - argo.lia.com
     paths:
       - /
     pathType: Prefix
     tls:
-      - secretName: argo-ergonnex-net
+      - secretName: argo-lia-net
         hosts:
-          - argo.ergonnex.net
+          - argo.lia.com

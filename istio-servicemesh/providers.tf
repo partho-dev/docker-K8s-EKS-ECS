@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "us-east-1"
-  profile = "erg-infra-user"
+  profile = "lia-infra-user"
 }
 
 terraform {

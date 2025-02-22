@@ -10,7 +10,7 @@ spec:
   project: default
   source:
     repoURL: https://bitbucket.org/your-org/your-git.git
-    targetRevision: feature/erg-initial-TOPLENGENB-2
+    targetRevision: feature/lia-initial-TOPLENGENB-2
     path: k8s/production
   destination:
     server: https://A3E395BF1F821.sk1.us-east-1.eks.amazonaws.com

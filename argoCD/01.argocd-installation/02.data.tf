@@ -1,6 +1,6 @@
 #Get the specific EKS from aws
 data "aws_eks_cluster" "eks" {
-  name = "erg-infra-eks-dev"
+  name = "lia-infra-eks-dev"
 }
 
 data "aws_eks_cluster_auth" "eks" {
