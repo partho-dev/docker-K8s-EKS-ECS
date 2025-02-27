@@ -124,7 +124,7 @@ server:
   - ingressClassName: external-nginx defines which Ingress controller to use.
   - annotations: Set things like force SSL redirection and custom timeout values.
   - hosts: Defines the domain (argo.lia.com) you want to use to access ArgoCD.
-  - tls: Enables TLS and links to a TLS secret (argo-ergonnex-net) managed by cert-manager.
+  - tls: Enables TLS and links to a TLS secret (argo-lia-net) managed by cert-manager.
 
 
 ### Add this file in the Helm release on step `3`
